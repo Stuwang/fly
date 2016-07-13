@@ -5,10 +5,15 @@ namespace fly{
 
 namespace socketops{
 
-void setNoblockAndC
-
-}
+void setNoblockAndCloseOnExec(int socket);
+void setNoDelay(int socket);
+void setReuseAddr(int socket);
+void setReusePort(int socket);
+void setKeepAlive(int socket);
+void setBufSize(int socket,size_t bufsize)
 
 };
+
+}
 
 #endif

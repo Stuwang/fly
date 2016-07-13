@@ -1,8 +1,8 @@
 include ../define.mk
 
-OBJ=Condition.o Mutex.o
+OBJ=SocketOps.o
 
-STATIC_LIB=libfly_base.a
+STATIC_LIB=libfly_net.a
 
 default:all
 

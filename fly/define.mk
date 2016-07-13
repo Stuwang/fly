@@ -1,10 +1,14 @@
 ROOTDIR=/home/w/tmp/mynet/fly/fly
 
+AR=ar
+
+AR_FLAG=rcs
+
 CCX=clang++
 
 INCLUDE=${ROOTDIR}
 
-CXX_FLAG=-O2 -Werror -Wall
+CXX_FLAG=-O2 -Werror -Wall -g
 
 INCLUDE_FLAG=-I${INCLUDE} -I.
 

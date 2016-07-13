@@ -5,6 +5,44 @@
 3. 包含定时器
 4. 针对日志的处理
 
+已经完成部分：
+
+mutex cond 封装
+
+下一步工作计划：
+实现日志
+具体类
+LogStream
+Logger
+
+实现对socket中 一些常见选项的封装，包括
+accept accept4
+bind
+listen
+socket
+read
+write
+close
+shutdownWrite
+socket error
+
+设置非阻塞
+
+设置NoDelay
+
+复用地址
+复用端口
+
+KeepAlive
+
+网络地址的处理
+
+获取对端地址
+获取本端地址
+获取ip
+获取port
+
+
 计划时间：
 1个月完成雏形，可以投入使用：编写一个http服务器
 2月之后经过测试，并且达到一定的稳定性
