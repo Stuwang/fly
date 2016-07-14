@@ -1,4 +1,4 @@
-ROOTDIR=/home/w/tmp/mynet/fly/fly
+ROOTDIR=/home/w/git/mynet/fly/fly
 
 AR=ar
 
