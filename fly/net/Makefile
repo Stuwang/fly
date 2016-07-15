@@ -13,4 +13,5 @@ all:${OBJ}
 
 clean:
 	$(call clean) \
-	rm main *.o *.out ${OBJ} -rf
+	rm main *.o *.out ${OBJ} -rf \
+	rm ${STATIC_LIB} -rf
