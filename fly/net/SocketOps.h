@@ -14,7 +14,7 @@ void setNoDelay(int socketfd, bool on);
 void setReuseAddr(int socketfd, bool on);
 void setReusePort(int socketfd, bool on);
 void setKeepAlive(int socketfd, bool on);
-void setBufSize(int socketfd, size_t bufsize);
+// void setBufSize(int socketfd, size_t bufsize);
 
 int creatNoBlockOrDie();
 int connect(int socketfd, const sockaddr* addr);
