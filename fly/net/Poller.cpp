@@ -36,7 +36,22 @@ void Poller::UpdateChannel(Channel* chan) {
 };
 
 void Poller::removeChannel(Channel* chan) {
+	int sockfd = chan->getfd();
+	ChannelMap::const_iterator it = channels_.find(chan->fd());
+	assert(hasChannel(chan));
+	channels_.erase(it);
+	update(EPOLL_CTL_DEL, chan);
+};
 
+void Poller::update(int operation, Channel *chan) {
+	int fd = chan->getfd();
+	struct epoll_event event;
+	bzero(&event, sizeof(event));
+	event.events = chan->events();
+	event.data.ptr = static_cast<void*>(chan);
+	if (::epoll_ctl(epollfd_, operation, fd, &event) < 0 ) {
+
+	}
 };
 
 bool Poller::hasChannel(Channel* chan) {

@@ -17,7 +17,7 @@ public:
 	void removeChannel(Channel* chan);
 	bool hasChannel(Channel* chan);
 private:
-
+	void update(int operation,Channel *chan);
 	void fillChanS(int num, ChannelList) const;
 
 	typedef std::map<int, Channel*> ChannelMap;
