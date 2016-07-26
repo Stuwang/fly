@@ -16,10 +16,11 @@ Poller::~Poller() {
 };
 
 int Poller::poll(int timeout, ChannelList *chans) {
-	int Num = ::epoll_wait(&*channels_.begin(), static_cast<int>(channels_.size()), timeout );
-	if ( Num > 0 ) {
-		fillChanS(Num, chans);
+	int num = ::epoll_wait(epollfd_,&*events_.begin(), static_cast<int>(channels_.size()), timeout );
+	if ( num > 0 ) {
+		fillChanS(num, chans);
 	}
+	return num;
 };
 
 void Poller::fillChanS(int num, ChannelList *chs) const {
@@ -31,15 +32,21 @@ void Poller::fillChanS(int num, ChannelList *chs) const {
 	}
 };
 
-void Poller::UpdateChannel(Channel* chan) {
-
+void Poller::updateChannel(Channel* chan) {
+	int fd = chan->getfd();
+	if (chan->HasAdded()) {
+		channels_[fd] = chan;
+		update(EPOLL_CTL_ADD, chan);
+	} else {
+		update(EPOLL_CTL_MOD, chan);
+	}
 };
 
 void Poller::removeChannel(Channel* chan) {
 	int sockfd = chan->getfd();
-	ChannelMap::const_iterator it = channels_.find(chan->fd());
+	ChannelMap::const_iterator it = channels_.find(sockfd);
 	assert(hasChannel(chan));
-	channels_.erase(it);
+	channels_.erase(it->first);
 	update(EPOLL_CTL_DEL, chan);
 };
 
@@ -55,7 +62,7 @@ void Poller::update(int operation, Channel *chan) {
 };
 
 bool Poller::hasChannel(Channel* chan) {
-	ChannelMap::const_iterator it = channels_.find(chan->fd());
+	ChannelMap::const_iterator it = channels_.find(chan->getfd());
 	return it != channels_.end() && it->second == chan;
 };
 

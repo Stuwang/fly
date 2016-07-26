@@ -1,6 +1,15 @@
 #ifndef FLY_POLLER_H__
 #define FLY_POLLER_H__
 
+#include <vector>
+#include <map>
+#include <cstring>
+#include <assert.h>
+#include <sys/epoll.h>
+#include <unistd.h>
+
+#include "Channel.h"
+
 namespace fly {
 
 class Channel;
@@ -18,7 +27,7 @@ public:
 	bool hasChannel(Channel* chan);
 private:
 	void update(int operation,Channel *chan);
-	void fillChanS(int num, ChannelList) const;
+	void fillChanS(int num, ChannelList*) const;
 
 	typedef std::map<int, Channel*> ChannelMap;
 	typedef std::vector<struct epoll_event> EvecnList;
@@ -28,7 +37,7 @@ private:
 	EvecnList events_;
 
 	static const int EventsInitSize = 64;
-}
+};
 
 }
 
