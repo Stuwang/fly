@@ -1,7 +1,9 @@
 #ifndef FLY_CHANNEL_H__
 #define FLY_CHANNEL_H__
 
-#include "Poller.h"
+#include <functional>
+
+#include <net/Poller.h>
 
 namespace fly {
 
@@ -11,6 +13,8 @@ typedef std::function<void()> EventCallBack;
 
 class Channel {
 public:
+
+	Channel(int sockfd, Poller* poller);
 
 	void setReadCallBack(const EventCallBack& b){
 		readCallBack_ = b;

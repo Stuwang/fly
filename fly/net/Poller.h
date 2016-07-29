@@ -8,16 +8,16 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 
-#include "Channel.h"
+#include <net/Channel.h>
 
 namespace fly {
 
 class Channel;
 
+typedef std::vector<Channel*> ChannelList;
+
 class Poller {
 public:
-	typedef std::vector<Channel*> ChannelList;
-
 	Poller();
 	~Poller();
 	int poll(int timeout, ChannelList *chans);
@@ -38,6 +38,8 @@ private:
 
 	static const int EventsInitSize = 64;
 };
+
+Poller *GetPoller();
 
 }
 

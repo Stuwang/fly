@@ -1,4 +1,4 @@
-#include "Poller.h"
+#include <net/Poller.h>
 
 namespace fly {
 
@@ -16,7 +16,7 @@ Poller::~Poller() {
 };
 
 int Poller::poll(int timeout, ChannelList *chans) {
-	int num = ::epoll_wait(epollfd_,&*events_.begin(), static_cast<int>(channels_.size()), timeout );
+	int num = ::epoll_wait(epollfd_, &*events_.begin(), static_cast<int>(channels_.size()), timeout );
 	if ( num > 0 ) {
 		fillChanS(num, chans);
 	}
@@ -64,6 +64,10 @@ void Poller::update(int operation, Channel *chan) {
 bool Poller::hasChannel(Channel* chan) {
 	ChannelMap::const_iterator it = channels_.find(chan->getfd());
 	return it != channels_.end() && it->second == chan;
+};
+
+Poller *GetPoller() {
+	return new Poller();
 };
 
 }

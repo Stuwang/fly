@@ -1,17 +1,17 @@
-#include "SocketOps.h"
+#include <net/SocketOps.h>
 
-#include <string.h>
-#include <netinet/tcp.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>  // snprintf
-#include <strings.h>  // bzero
-#include <sys/socket.h>
-#include <unistd.h>
 
 namespace fly {
 
 namespace socketops {
+
+int creatEventFd(){
+	int eventfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+	if(eventfd < 0){
+
+	}
+	return eventfd;
+};
 
 void setNoblockAndCloseOnExec(int socket) {
 	int flag = ::fcntl(socket, F_GETFL, 0);
