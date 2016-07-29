@@ -7,4 +7,15 @@ void Channel::update(){
 	addedEvents_ = true;
 };
 
+void Channel::remove(){
+	poller_->removeChannel(this);
+	addedEvents_ = false;
+};
+
+void Channel::handleEvents(){
+	if(r_events_ & EPOLLIN){
+		
+	}
+};
+
 }

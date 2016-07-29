@@ -7,23 +7,72 @@ namespace fly {
 
 class Poller;
 
+typedef std::function<void()> EventCallBack;
+
 class Channel {
 public:
-	inline int getfd(){
+
+	void setReadCallBack(const EventCallBack& b){
+		readCallBack_ = b;
+	};
+
+	void setWriteCallBack(const EventCallBack& b){
+		writeCallBack_ = b;
+	};
+
+	void setCloseCallBack(const EventCallBack& b){
+		closeCallBack_ = b;
+	};
+
+	void setErrorCallBack(const EventCallBack& b){
+		errorCallBack_ = b;
+	}
+
+	void enableRead() {
+		events_ |= EPOLLIN;
+		update();
+	};
+	void disableRead() {
+		events_ &= ~EPOLLIN;
+		update();
+	};
+
+	void enableWrite() {
+		events_ |= EPOLLOUT;
+		update();
+	};
+	void disableWrite() {
+		events_ &= ~EPOLLOUT;
+		update();
+	};
+
+	void disableAll(){
+		events_ = 0;
+		update();
+	};
+
+	inline int getfd() {
 		return sockfd_;
 	};
-	inline void setRevents(int events){
+	inline void setRevents(int events) {
 		r_events_ = events;
 	};
-	inline int events(){
+	inline int events() {
 		return events_;
 	};
 
-	inline bool HasAdded(){
+	inline bool HasAdded() {
 		return addedEvents_;
 	}
 
+	inline void SetAdded(bool added) {
+		addedEvents_ = added;
+	}
+
 	void update();
+	void remove();
+
+	void handleEvents();
 private:
 	int events_;
 	int r_events_;
@@ -31,6 +80,11 @@ private:
 	int sockfd_;
 
 	bool addedEvents_;
+
+	EventCallBack readCallBack_;
+	EventCallBack writeCallBack_;
+	EventCallBack closeCallBack_;
+	EventCallBack errorCallBack_;
 };
 
 }
