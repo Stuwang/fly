@@ -8,7 +8,8 @@ EventLoop::EventLoop()
 	, looping_ (false)
 	, quit_ (true)
 {
-
+	weakup_chan_.setReadCallBack(std::bind(&EventLoop::HandleRead,this));
+	weakup_chan_.enableRead();
 };
 
 EventLoop::~EventLoop() {};

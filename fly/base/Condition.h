@@ -4,8 +4,8 @@
 
 #include "Config.h"
 
-#include "Types.h"
-#include "Mutex.h"
+#include <base/Types.h>
+#include <base/Mutex.h>
 
 #include <errno.h>
 #include <pthread.h>
