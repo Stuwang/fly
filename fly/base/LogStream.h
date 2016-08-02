@@ -81,9 +81,9 @@ public:
 	friend LogStream& operator<<(LogStream& self, const void*);
 
 
-	// BufferT& buffer() {
-	// 	return buffer_;
-	// };
+	BufferT& buffer() {
+		return buffer_;
+	};
 	void append(const char*data, int len);
 public:
 	template<class T>

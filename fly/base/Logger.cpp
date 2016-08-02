@@ -37,7 +37,7 @@ Logger::~Logger() {
 
 	// const LogStream::BufferT buf = buffer();
 
-	g_output(stream_.buffer_.data(), stream_.buffer_.length());
+	g_output(buffer().data(), buffer().length());
 
 	if (level_ == FATAL) {
 		g_flush();

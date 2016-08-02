@@ -62,9 +62,9 @@ public:
 	LogStream& Stream() {
 		return stream_;
 	};
-	// LogStream::BufferT & buffer() {
-	// 	return stream_.buffer_;
-	// };
+	LogStream::BufferT & buffer() {
+		return stream_.buffer();
+	};
 private:
 	int level_;
 	LogStream stream_;
