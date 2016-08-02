@@ -8,6 +8,7 @@
 #endif
 
 #include <cstdio>
+#include <stdint.h>
 
 
 namespace fly {

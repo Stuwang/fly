@@ -5,18 +5,59 @@
 #include <cstring>
 #include <string>
 #include <algorithm>
+#include <assert.h>
+
+#include <base/Types.h>
+
 
 namespace fly {
 
-class LogBuf{
+class LogBuf : noncopyable {
 public:
-	size_t avail();
-	size_t append(const char*data,int len);
-	void add(size_t len);
-	char* current();
+	LogBuf() {
+		data_ = new char[initSize];
+		cur_ = 0;
+		size_ = initSize;
+	};
+	~LogBuf() {
+		delete [] data_;
+	};
+	size_t avail() const {
+		return size_ - cur_;
+	};
+	size_t append(const char*data, int len) {
+		int w = 0;
+		if (size_ - cur_ > len) {
+			w = len;
+		} else {
+			w = size_ - cur_;
+		}
+		memcpy(data_ + cur_, data, w);
+		add(w);
+		return w;
+	};
+	void add(size_t len) {
+		assert(size_ - cur_ > len);
+		cur_ += len;
+	};
+	char* current() {
+		return data_ + cur_;
+	};
+	const char* data() const {
+		return data_;
+	};
+	size_t length() const {
+		return cur_;
+	}
+private:
+	char * data_;
+	size_t cur_;
+	size_t size_;
+
+	static const size_t initSize = 64 * 1024;
 };
 
-class LogStream {
+class LogStream : noncopyable {
 public:
 	typedef LogBuf BufferT;
 
@@ -39,10 +80,14 @@ public:
 
 	friend LogStream& operator<<(LogStream& self, const void*);
 
-private:
+
+	// BufferT& buffer() {
+	// 	return buffer_;
+	// };
+	void append(const char*data, int len);
+public:
 	template<class T>
 	void append(T value);
-	void append(const char*data, int len);
 	BufferT buffer_;
 
 	static const int MaxNumSize = 64;

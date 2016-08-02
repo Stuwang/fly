@@ -8,9 +8,9 @@
 #include <net/Poller.h>
 #include <net/SocketOps.h>
 
-namespace fly{
+namespace fly {
 
-class EventLoop{
+class EventLoop {
 public:
 	EventLoop();
 	~EventLoop();
@@ -19,6 +19,7 @@ public:
 	void HandleRead();
 	void WeakUp();
 	void quit();
+	Poller *getPoller() {return poller_;};
 public:
 	Poller *poller_;
 	Channel weakup_chan_;

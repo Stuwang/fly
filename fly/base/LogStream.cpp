@@ -47,6 +47,10 @@ void LogStream::append(T value) {
 	}
 };
 
+void LogStream::append(const char*data, int len) {
+	buffer_.append(data, len);
+};
+
 #define LOGSTREAM_HELPER(type)	\
 LogStream& operator<<(LogStream& self, type value){\
 	self.append(value);\
@@ -69,7 +73,7 @@ LogStream& operator<<(LogStream& self, char value) {
 	return self;
 };
 
-LogStream& operator<<(LogStream& self,unsigned char value) {
+LogStream& operator<<(LogStream& self, unsigned char value) {
 	self.append(reinterpret_cast<char*>(&value), 1);
 	return self;
 };
@@ -83,6 +87,11 @@ LogStream& operator<<(LogStream& self,
                       const unsigned char* str) {
 	const char* p = reinterpret_cast<const char*>(str);
 	self.append(p, ::strlen(p));
+	return self;
+};
+
+LogStream& operator<<(LogStream& self, const std::string& str) {
+	self.append(str.data(), str.length());
 	return self;
 };
 

@@ -1,6 +1,6 @@
 include ../define.mk
 
-OBJ=Condition.o Mutex.o LogStream.o Thread.o
+OBJ=Condition.o Mutex.o LogStream.o Thread.o Logger.o
 
 STATIC_LIB=libfly_base.a
 
