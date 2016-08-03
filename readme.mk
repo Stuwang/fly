@@ -1,20 +1,16 @@
-计划写一个网络酷，主要包含一下处理
+###计划写一个网络酷，主要包含一下处理
 
 1. 基本网络io封装，read，write，epoll connect accept 等
 2. 多线程模式
 3. 包含定时器
 4. 针对日志的处理
 
-已经完成部分：
+#### 已经完成部分：
 
-mutex cond 封装
-
-下一步工作计划：
 实现日志
 具体类
 LogStream
 Logger
-
 实现对socket中 一些常见选项的封装，包括
 accept accept4
 bind
@@ -25,7 +21,6 @@ write
 close
 shutdownWrite
 socket error
-
 设置非阻塞
 
 设置NoDelay
@@ -41,6 +36,15 @@ KeepAlive
 获取本端地址
 获取ip
 获取port
+
+mutex cond 封装
+
+#### 下一步工作计划：
+
+
+
+
+
 
 
 计划时间：
