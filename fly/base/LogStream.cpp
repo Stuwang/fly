@@ -2,7 +2,7 @@
 
 namespace fly {
 
-const char digits[] = "0123456789";
+const char *digits = "9876543210123456789" + 9;
 // const char digitsHex[] = "0123456789ABCDEF";
 
 template<typename T>
@@ -92,6 +92,11 @@ LogStream& operator<<(LogStream& self,
 
 LogStream& operator<<(LogStream& self, const std::string& str) {
 	self.append(str.data(), str.length());
+	return self;
+};
+
+LogStream& operator<<(LogStream& self, const StringView& v) {
+	self.append(v.data(), v.size());
 	return self;
 };
 

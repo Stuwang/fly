@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include <base/Types.h>
+#include <base/StringView.h>
 
 
 namespace fly {
@@ -79,6 +80,8 @@ public:
 	friend LogStream& operator<<(LogStream& self, const std::string& str);
 
 	friend LogStream& operator<<(LogStream& self, const void*);
+
+	friend LogStream& operator<<(LogStream& self,const StringView& v);
 
 
 	BufferT& buffer() {

@@ -10,13 +10,8 @@ int main() {
 
 	fuck f;
 	f.Get() = 12;
-	LOG_INFO << "reference " << f.data << " \n";
-
-	LOG_TRACE << "what the fuck\n" ;
-	LOG_DEBUG << "fuck!!!\n";
-	LOG_INFO << "fuck!!!\n";
-	LOG_ERROR << "fuck!!!\n";
-	LOG_FATAL << "fuck!!!\n";
-
-
+	const char *a = "aaaaa";
+	const char *b = "bbbbb";
+	int ret = memcmp(a, b, 5);
+	LOG_INFO << -1 << '\n' ;
 };
