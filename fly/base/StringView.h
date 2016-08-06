@@ -12,6 +12,8 @@ public:
 	StringView(): data_(NULL), len_(0) {};
 	StringView(const char*str)
 		: data_(str), len_(strlen(str) ) {};
+	StringView(const char*str, size_t size)
+		: data_(str), len_(size) {};
 	StringView(const unsigned char* str)
 		: data_(reinterpret_cast<const char*>(str))
 		, len_(static_cast <int>(::strlen(data_)) ) {};
