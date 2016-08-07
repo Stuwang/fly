@@ -21,18 +21,11 @@ public:
 	size_t ReadAbleBytes() const ;
 	StringView ToStringView();
 
-
 	size_t WriteAbleBytes()const ;
-	size_t Write(const void*, size_t len);
-	size_t Write(const char*, size_t len);
-
 	void append(const char* data, size_t len);
 	void append(const void* data, size_t len);
 
-	char* data();
-
 	void retireRead(size_t );
-	void retireWrite(size_t n);
 	void retireWriteAble(size_t n);
 
 	template<class T>
@@ -48,7 +41,9 @@ public:
 		return value;
 	};
 private:
-
+	void retireWrite(size_t n);
+	char* data();
+	char* Peek();
 	void clearReaded();
 
 	std::vector<char> buf_;

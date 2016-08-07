@@ -66,7 +66,7 @@ bool Poller::hasChannel(Channel* chan) {
 	return it != channels_.end() && it->second == chan;
 };
 
-Poller *GetPoller() {
+Poller *GetNewPoller() {
 	return new Poller();
 };
 

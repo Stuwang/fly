@@ -39,27 +39,22 @@ size_t Buffer::WriteAbleBytes()const {
 	return buf_.size() - WriteIndex_;
 };
 
-size_t Buffer::Write(const void*src, size_t len) {
-	return Write(static_cast<const char*>(src), len);
-};
-
-size_t Buffer::Write(const char*src, size_t len) {
-	retireWriteAble(len);
-	memcpy(buf_.data(), src, len);
-	retireWrite(len);
-	return len;
-};
-
 void Buffer::append(const char* data, size_t len) {
-	Write(data, len);
+	append(static_cast<const void*>(data), len);
 };
 
 void Buffer::append(const void* data, size_t len) {
-	Write(data, len);
+	retireWriteAble(len);
+	memcpy(Peek(), data, len);
+	retireWrite(len);
 };
 
 char* Buffer::data() {
 	return buf_.data() + ReadIndex_;
+};
+
+char* Buffer::Peek() {
+	return buf_.data() + WriteIndex_;
 };
 
 void Buffer::retireRead(size_t n) {
@@ -82,7 +77,7 @@ void Buffer::retireWriteAble(size_t n) {
 void Buffer::clearReaded() {
 	if (ReadIndex_ >= buf_.size() / 2) {
 		std::vector<char> v(buf_.size());
-		memcpy(&*v.begin(), &*(buf_.data() + ReadIndex_), WriteIndex_ - ReadIndex_);
+		memcpy(&*v.begin(), &*data(), WriteIndex_ - ReadIndex_);
 		WriteIndex_ = WriteIndex_ - ReadIndex_;
 		ReadIndex_ = 0;
 		buf_.swap(v);

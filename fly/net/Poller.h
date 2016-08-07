@@ -39,7 +39,7 @@ private:
 	static const int EventsInitSize = 64;
 };
 
-Poller *GetPoller();
+Poller *GetNewPoller();
 
 }
 

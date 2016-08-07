@@ -1,6 +1,6 @@
 include ../define.mk
 
-OBJ=SocketOps.o Poller.o Channel.o EventLoop.o Accepter.o
+OBJ=SocketOps.o Poller.o Channel.o EventLoop.o Accepter.o TcpConnection.o
 
 STATIC_LIB=libfly_net.a
 
