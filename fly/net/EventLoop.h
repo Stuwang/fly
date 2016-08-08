@@ -16,8 +16,8 @@ public:
 	~EventLoop();
 	void Loop();
 
-	
-	
+
+
 public:
 	void HandleRead();
 	void WeakUp();
@@ -31,7 +31,5 @@ public:
 	bool looping_;
 	bool quit_;
 };
-
-}
 
 #endif

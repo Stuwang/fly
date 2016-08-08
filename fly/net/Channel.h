@@ -41,6 +41,10 @@ public:
 		update();
 	};
 
+	bool isReading(){
+		return events_ & EPOLLIN;
+	};
+
 	void enableWrite() {
 		events_ |= EPOLLOUT;
 		update();
@@ -48,6 +52,10 @@ public:
 	void disableWrite() {
 		events_ &= ~EPOLLOUT;
 		update();
+	};
+
+	bool isWriting(){
+		return events_ & EPOLLOUT;
 	};
 
 	void disableAll(){

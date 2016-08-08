@@ -2,13 +2,14 @@
 #define FLY_TCPCONNECTION_H__
 
 #include <base/Buffer.h>
+#include <base/Types.h>
 #include <base/StringView.h>
 #include <net/EventLoop.h>
 
 
 namespace fly {
 
-class TcpConnection {
+class TcpConnection : noncopyable {
 public:
 	TcpConnection(EventLoop* loop, int fd, const std::string& name = "");
 	~TcpConnection();
@@ -27,6 +28,7 @@ public:
 	bool isReading()const;
 	void startListenWrite();
 	void endListenWrite();
+	bool isWriting()const;
 
 	Buffer* readBuffer();
 	Buffer* writeBuffer();

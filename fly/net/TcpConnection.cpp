@@ -18,7 +18,7 @@ TcpConnection::TcpConnection(EventLoop* loop,
 };
 
 TcpConnection::~TcpConnection() {
-
+	delete chan_;
 };
 
 EventLoop *TcpConnection::getEventLoop() {
@@ -38,11 +38,15 @@ const struct sockaddr_in& TcpConnection::peerAddress() const {
 };
 
 bool TcpConnection::connected() const {
+
 	return true;
 };
 
 void TcpConnection::Send(const void* data, size_t len) {
-
+	// if in current thread loop.then send
+	if (1) {
+		SendInLoop(data, len);
+	}
 };
 
 void TcpConnection::Send(const StringView& data) {
@@ -54,23 +58,28 @@ void TcpConnection::Send(const Buffer& data) {
 };
 
 void TcpConnection::startRead() {
-
+	chan_->enableRead();
 };
 
 void TcpConnection::stopRead() {
-
+	chan_->disableRead();
 };
 
 bool TcpConnection::isReading()const {
+	chan_ -> isReading();
 	return true;
 };
 
 void TcpConnection::startListenWrite() {
-
+	chan_->enableWrite();
 };
 
 void TcpConnection::endListenWrite() {
+	chan_->disableWrite();
+};
 
+bool TcpConnection::isWriting()const {
+	return chan_->isWriting();
 };
 
 Buffer* TcpConnection::readBuffer() {
@@ -82,7 +91,22 @@ Buffer* TcpConnection::writeBuffer() {
 };
 
 void TcpConnection::SendInLoop(const void* data, size_t len) {
+	if (0 != outputBuffer_.size()) {
+		outputBuffer_.append(data , len);
+		startListenWrite();
+		return;
+	}
 
+	size_t size = socketops::write(sockfd_, data, len);
+	if (size == len) {
+		return;
+	} else {
+		int Error = errno;
+		if ( Error = EAGAIN || Error = EWOULDBLOCK) {
+			outputBuffer_.append(data + size, len - size);
+			startListenWrite();
+		}
+	}
 };
 
 void TcpConnection::SendInLoop(StringView data) {
@@ -90,11 +114,11 @@ void TcpConnection::SendInLoop(StringView data) {
 };
 
 void TcpConnection::handRead() {
-
+	
 };
 
 void TcpConnection::handWrite() {
-
+	
 };
 
 void TcpConnection::handClose() {
