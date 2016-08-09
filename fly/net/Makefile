@@ -1,3 +1,6 @@
+# ROOTDIR=/home/w/git/mynet/fly/fly
+ROOTDIR=$(shell pwd)/..
+
 include ../define.mk
 
 OBJ=SocketOps.o Poller.o Channel.o EventLoop.o Accepter.o TcpConnection.o

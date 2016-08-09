@@ -23,15 +23,10 @@ void test() {
 };
 
 int main() {
-	int i = fly::NetToHost(fly::HostToNet(1));
+	int i = 1; //fly::NetToHost(fly::HostToNet(1));
 	printf("%08X\n", 1);
 	printf("%08X\n", i);
 	int l = ntohl(1);
 	assert(i == l);
 	test();
 };
-
-#define  err(msg)\
-perror("msg");
-
-err(aaaa);
