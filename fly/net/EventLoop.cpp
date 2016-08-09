@@ -18,16 +18,28 @@ void EventLoop::Loop() {
 	looping_ = true;
 	while (!quit_) {
 		int num = poller_->poll(1000, &chans_);
+		IsCallFunctors_ =false;
 
-		if (num == 0) {
-			return;
+		if (num != 0) {
+			for (auto &i : chans_) {
+				i->handleEvents();
+			}
 		}
-
-		for (auto &i : chans_) {
-			i->handleEvents();
-		}
+		DoFuncs();
 	}
 	looping_ = false;
+};
+
+void EventLoop::DoFuncs(){
+	std::list<Functor>	funcs;
+	{
+		LockGuard lock(mutex_);
+		funcs.swap(funcs_);
+		IsCallFunctors_ =true;
+	}
+	for(auto &i :funcs){
+		i();
+	}
 };
 
 void EventLoop::HandleRead() {
@@ -51,6 +63,28 @@ void EventLoop::WeakUp() {
 void EventLoop::quit() {
 	quit_ = true;
 	WeakUp();
+};
+
+bool EventLoop::IsInLoop() const {
+	return pid_== 1;
+};
+
+void EventLoop::runInLoop(const Functor& func){
+	if(IsInLoop()){
+		func();
+	}else{
+		queueInLoop(func);
+	}
+};
+
+void EventLoop::queueInLoop(const Functor& func){
+	{
+		LockGuard lock(mutex_);
+		funcs_.push_back(func);
+	}
+	if(!IsInLoop() || IsCallFunctors_){
+		WeakUp();
+	}
 };
 
 };
