@@ -102,8 +102,8 @@ void TcpConnection::SendInLoop(const void* data, size_t len) {
 		return;
 	} else {
 		int Error = errno;
-		if ( Error == EAGAIN || Error == EWOULDBLOCK ) {
-			outputBuffer_.append(static_cast<const char*>(data)+size, len - size);
+		if ( Error == EAGAIN || Error == EWOULDBLOCK) {
+			outputBuffer_.append(static_cast<const char*>(data) + size, len - size);
 			startListenWrite();
 		}
 	}

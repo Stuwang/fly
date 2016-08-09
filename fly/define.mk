@@ -1,4 +1,5 @@
-ROOTDIR=/home/w/git/mynet/fly/fly
+
+
 
 AR=ar
 

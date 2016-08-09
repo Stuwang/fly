@@ -32,6 +32,6 @@ public:
 	bool quit_;
 };
 
-}
+};
 
 #endif

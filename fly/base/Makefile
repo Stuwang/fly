@@ -1,3 +1,5 @@
+ROOTDIR=$(shell pwd)/..
+
 include ../define.mk
 
 OBJ=Condition.o Mutex.o LogStream.o Thread.o Logger.o Buffer.o
