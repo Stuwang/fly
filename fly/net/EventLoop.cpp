@@ -66,7 +66,7 @@ void EventLoop::quit() {
 };
 
 bool EventLoop::IsInLoop() const {
-	return pid_== 1;
+	return pid_ == CurrentThread::tid();
 };
 
 void EventLoop::runInLoop(const Functor& func){

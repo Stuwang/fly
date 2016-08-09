@@ -5,6 +5,7 @@
 #include <functional>
 #include <pthread.h>
 
+#include <base/CurrentThread.h>
 #include <base/Types.h>
 
 namespace fly {

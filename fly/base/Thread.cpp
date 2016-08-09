@@ -40,6 +40,7 @@ void Thread::setDefaultName() {
 void* Thread::thread_func(void * data) {
 	assert(data);
 	Thread *p = static_cast<Thread*>(data);
+	p->id_ = CurrentThread::detail::getTid();
 	p->running_ = true;
 	try {
 		p->func_();

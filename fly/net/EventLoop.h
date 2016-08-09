@@ -5,6 +5,7 @@
 
 #include <base/Mutex.h>
 #include <base/Condition.h>
+#include <base/CurrentThread.h>
 
 #include <net/Channel.h>
 #include <net/Poller.h>
