@@ -1,6 +1,8 @@
 #ifndef FLY_TCPCONNECTION_H__
 #define FLY_TCPCONNECTION_H__
 
+#include  <functional>
+
 #include <base/Buffer.h>
 #include <base/Types.h>
 #include <base/StringView.h>
@@ -22,7 +24,7 @@ public:
 
 	void Send(const void* data, size_t len);
 	void Send(const StringView& data);
-	void Send(const Buffer& data);
+	void Send(Buffer& data);
 	void startRead();
 	void stopRead();
 	bool isReading()const;
@@ -35,11 +37,12 @@ public:
 protected:
 	void SendInLoop(const void* data, size_t len);
 	void SendInLoop(StringView data);
+	void SendInLoop_helper(StringView data);
+	
 	void handRead();
 	void handWrite();
 	void handClose();
 	void handError();
-
 
 private:
 	EventLoop *loop_;

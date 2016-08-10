@@ -38,23 +38,25 @@ const struct sockaddr_in& TcpConnection::peerAddress() const {
 };
 
 bool TcpConnection::connected() const {
-
 	return true;
 };
 
 void TcpConnection::Send(const void* data, size_t len) {
-	// if in current thread loop.then send
-	if (1) {
-		SendInLoop(data, len);
-	}
+	Send(StringView(data, len));
 };
 
 void TcpConnection::Send(const StringView& data) {
-
+	// if in current thread loop.then send
+	if (loop_->IsInLoop()) {
+		SendInLoop(data.data(), data.size());
+	} else {
+		loop_->queueInLoop(
+		    std::bind(&TcpConnection::SendInLoop_helper, this, data.toString()));
+	}
 };
 
-void TcpConnection::Send(const Buffer& data) {
-
+void TcpConnection::Send(Buffer& data) {
+	Send(StringView(data.data(), data.ReadAbleBytes()));
 };
 
 void TcpConnection::startRead() {
@@ -113,12 +115,16 @@ void TcpConnection::SendInLoop(StringView data) {
 	SendInLoop(data.data(), data.size());
 };
 
+void TcpConnection::SendInLoop_helper(StringView data) {
+	SendInLoop(data.data(), data.size());
+};
+
 void TcpConnection::handRead() {
-	
+
 };
 
 void TcpConnection::handWrite() {
-	
+
 };
 
 void TcpConnection::handClose() {
