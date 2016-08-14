@@ -9,16 +9,21 @@ TcpConnection::TcpConnection(EventLoop* loop,
 	, name_(name)
 {
 	poller_ = loop->getPoller();
-	chan_ = new Channel(sockfd_, poller_);
+	chan_.reset(new Channel(sockfd_, poller_) );
 	localAddr_ = socketops::getLocalAddr(sockfd_);
 	peerAddr_ = socketops::getPeerAddr(sockfd_);
 	socketops::setNoblockAndCloseOnExec(sockfd_);
 	socketops::setNoDelay(sockfd_, true);
 	socketops::setKeepAlive(sockfd_, true);
+
+	chan_->setReadCallBack(std::bind(&TcpConnection::handRead, this));
+	chan_->setWriteCallBack(std::bind(&TcpConnection::handWrite, this));
+	chan_->setCloseCallBack(std::bind(&TcpConnection::handClose, this));
+	chan_->setErrorCallBack(std::bind(&TcpConnection::handError, this));
 };
 
 TcpConnection::~TcpConnection() {
-	delete chan_;
+
 };
 
 EventLoop *TcpConnection::getEventLoop() {
@@ -60,11 +65,11 @@ void TcpConnection::Send(Buffer& data) {
 };
 
 void TcpConnection::startRead() {
-	chan_->enableRead();
+	loop_->runInLoop(std::bind(&TcpConnection::SetReadInLoop, this, true) );
 };
 
 void TcpConnection::stopRead() {
-	chan_->disableRead();
+	loop_->runInLoop(std::bind(&TcpConnection::SetReadInLoop, this, false));
 };
 
 bool TcpConnection::isReading()const {
@@ -72,16 +77,32 @@ bool TcpConnection::isReading()const {
 	return true;
 };
 
+void  TcpConnection::SetReadInLoop(bool on) {
+	if (on) {
+		chan_->enableRead();
+	} else {
+		chan_ ->disableRead();
+	}
+};
+
 void TcpConnection::startListenWrite() {
-	chan_->enableWrite();
+	loop_->runInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, true));
 };
 
 void TcpConnection::endListenWrite() {
-	chan_->disableWrite();
+	loop_->runInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, false));
 };
 
 bool TcpConnection::isWriting()const {
 	return chan_->isWriting();
+};
+
+void TcpConnection::SetWriteInLoop(bool on) {
+	if (on) {
+		chan_->enableWrite();
+	} else {
+		chan_ ->disableWrite();
+	}
 };
 
 Buffer* TcpConnection::readBuffer() {
@@ -120,19 +141,43 @@ void TcpConnection::SendInLoop_helper(StringView data) {
 };
 
 void TcpConnection::handRead() {
+	static const int extraBufSize = 6 * 1024;
+	char buf[extraBufSize];
+	struct iovec vec[2];
+	const size_t writable = inputBuffer_.WriteAbleBytes();
+	vec[0].iov_base = inputBuffer_.Peek();
+	vec[0].iov_len = writable;
+	vec[1].iov_base = buf;
+	vec[1].iov_len = extraBufSize;
+	const ssize_t n = socketops::readv(chan_->getfd(), vec, 2);
+	if (n < 0) {
 
+	} else if (n <= writable) {
+		inputBuffer_.retireWriteAble(n);
+	} else {
+		inputBuffer_.retireWriteAble(writable);
+		inputBuffer_.append(buf, n - writable);
+	}
 };
 
 void TcpConnection::handWrite() {
-
+	size_t len = outputBuffer_.ReadAbleBytes();
+	size_t size = socketops::write(chan_->getfd(), outputBuffer_.data(), len);
+	outputBuffer_.retireRead(size);
+	if (0 == outputBuffer_.ReadAbleBytes()) {
+		chan_->disableWrite();
+	}
 };
 
 void TcpConnection::handClose() {
-
+	assert(loop_->IsInLoop());
+	chan_->disableAll();
+	chan_->remove();
 };
 
 void TcpConnection::handError() {
-
+	int err = socketops::getSocketError(chan_->getfd());
+	(void)err;
 };
 
 }

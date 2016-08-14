@@ -2,6 +2,7 @@
 #define FLY_TCPCONNECTION_H__
 
 #include  <functional>
+#include  <memory>
 
 #include <base/Buffer.h>
 #include <base/Types.h>
@@ -27,9 +28,11 @@ public:
 	void Send(Buffer& data);
 	void startRead();
 	void stopRead();
+	void SetReadInLoop(bool on);
 	bool isReading()const;
 	void startListenWrite();
 	void endListenWrite();
+	void SetWriteInLoop(bool on);
 	bool isWriting()const;
 
 	Buffer* readBuffer();
@@ -38,7 +41,7 @@ protected:
 	void SendInLoop(const void* data, size_t len);
 	void SendInLoop(StringView data);
 	void SendInLoop_helper(StringView data);
-	
+
 	void handRead();
 	void handWrite();
 	void handClose();
@@ -48,7 +51,7 @@ private:
 	EventLoop *loop_;
 	Poller *poller_;
 	int sockfd_;
-	Channel *chan_;
+	std::unique_ptr<Channel> chan_;
 	std::string name_;
 
 	Buffer inputBuffer_;
