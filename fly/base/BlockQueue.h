@@ -21,7 +21,7 @@ public:
 	T get(){
 		LockGuard lock(mutex_);
 		while(data_.empty()){
-			cond_.wait(mutex_);
+			cond_.Wait(mutex_);
 		}
 		T ret(data_.front());
 		data_.pop_front();
@@ -32,7 +32,7 @@ public:
 		return data_.size();
 	};
 private:
-	std::queue<T> data_;
+	std::deque<T> data_;
 	Condition cond_;
 	Mutex mutex_;
 };

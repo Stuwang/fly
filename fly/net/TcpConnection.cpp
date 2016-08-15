@@ -12,14 +12,19 @@ TcpConnection::TcpConnection(EventLoop* loop,
 	chan_.reset(new Channel(sockfd_, poller_) );
 	localAddr_ = socketops::getLocalAddr(sockfd_);
 	peerAddr_ = socketops::getPeerAddr(sockfd_);
-	socketops::setNoblockAndCloseOnExec(sockfd_);
-	socketops::setNoDelay(sockfd_, true);
-	socketops::setKeepAlive(sockfd_, true);
 
 	chan_->setReadCallBack(std::bind(&TcpConnection::handRead, this));
 	chan_->setWriteCallBack(std::bind(&TcpConnection::handWrite, this));
 	chan_->setCloseCallBack(std::bind(&TcpConnection::handClose, this));
 	chan_->setErrorCallBack(std::bind(&TcpConnection::handError, this));
+
+	socketops::setNoblockAndCloseOnExec(sockfd_);
+	socketops::setNoDelay(sockfd_, true);
+	socketops::setKeepAlive(sockfd_, true);
+
+	startRead();
+
+	if (newCb_) newCb_(shared_from_this());
 };
 
 TcpConnection::~TcpConnection() {
@@ -56,7 +61,9 @@ void TcpConnection::Send(const StringView& data) {
 		SendInLoop(data.data(), data.size());
 	} else {
 		loop_->queueInLoop(
-		    std::bind(&TcpConnection::SendInLoop_helper, this, data.toString()));
+		    std::bind(&TcpConnection::SendInLoop_helper,
+		              shared_from_this()
+		              , data.toString()));
 	}
 };
 
@@ -124,6 +131,13 @@ void TcpConnection::SendInLoop(const void* data, size_t len) {
 	if (size == len) {
 		return;
 	} else {
+		if (len - size >= HighWater_ ) {
+			if (highCb_) {
+				highCb_(shared_from_this());
+			} else {
+
+			}
+		}
 		int Error = errno;
 		if ( Error == EAGAIN || Error == EWOULDBLOCK) {
 			outputBuffer_.append(static_cast<const char*>(data) + size, len - size);
@@ -140,6 +154,32 @@ void TcpConnection::SendInLoop_helper(StringView data) {
 	SendInLoop(data.data(), data.size());
 };
 
+void TcpConnection::shutdown() {
+	loop_->runInLoop(std::bind(
+	                     &TcpConnection::shutdownInLoop,
+	                     shared_from_this()));
+};
+
+void TcpConnection::shutdownInLoop() {
+	assert(loop_->IsInLoop());
+	socketops::shutdownWrite(chan_->getfd());
+};
+
+void TcpConnection::forceClose()
+{
+
+	loop_->queueInLoop(std::bind(&TcpConnection::forceCloseInLoop,
+	                             shared_from_this()));
+
+}
+
+
+void TcpConnection::forceCloseInLoop()
+{
+	assert(loop_->IsInLoop());
+	handClose();
+}
+
 void TcpConnection::handRead() {
 	static const int extraBufSize = 6 * 1024;
 	char buf[extraBufSize];
@@ -151,7 +191,7 @@ void TcpConnection::handRead() {
 	vec[1].iov_len = extraBufSize;
 	const ssize_t n = socketops::readv(chan_->getfd(), vec, 2);
 	if (n < 0) {
-
+		if (readCb_) readCb_(shared_from_this());
 	} else if (n <= writable) {
 		inputBuffer_.retireWriteAble(n);
 	} else {
@@ -166,13 +206,13 @@ void TcpConnection::handWrite() {
 	outputBuffer_.retireRead(size);
 	if (0 == outputBuffer_.ReadAbleBytes()) {
 		chan_->disableWrite();
+		if (writeCb_) writeCb_(shared_from_this());
 	}
 };
 
 void TcpConnection::handClose() {
 	assert(loop_->IsInLoop());
-	chan_->disableAll();
-	chan_->remove();
+	if (closeCb_) closeCb_(shared_from_this());
 };
 
 void TcpConnection::handError() {

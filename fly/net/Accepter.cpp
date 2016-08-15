@@ -13,6 +13,7 @@ Accepter::Accepter(EventLoop* loop, const struct sockaddr_in& addr, bool reusepo
 	socketops::setReusePort(fd, reuseport);
 	socketops::bindOrDie(fd, socketops::sockaddr_cast(&addr));
 	chan_.setReadCallBack(std::bind(&Accepter::handleRead, this));
+
 };
 
 Accepter::~Accepter() {
@@ -25,6 +26,7 @@ void Accepter::listen() {
 	int fd = chan_.getfd();
 	socketops::listenOrDie(fd);
 	listening_ = true;
+	chan_.enableRead();
 };
 
 void Accepter::handleRead() {

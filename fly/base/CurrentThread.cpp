@@ -4,7 +4,11 @@ namespace fly {
 
 namespace  CurrentThread {
 
-thread_local int tid_;
+int& ThreadTid() {
+	static thread_local int tid_;
+	return tid_;
+}
+
 
 namespace detail {
 
@@ -15,7 +19,7 @@ int getTid() {
 class ThreadInit {
 public:
 	ThreadInit() {
-		tid_ = getTid();
+		ThreadTid() = getTid();
 	};
 };
 

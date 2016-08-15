@@ -10,7 +10,12 @@ Channel::Channel(int sockfd, Poller* poller)
 	, addedEvents_(false)
 {
 
-}
+};
+
+Channel::~Channel() {
+	disableAll();
+	remove();
+};
 
 void Channel::update() {
 	poller_->updateChannel(this);

@@ -16,19 +16,21 @@ public:
 
 	Channel(int sockfd, Poller* poller);
 
-	void setReadCallBack(const EventCallBack& b){
+	~Channel();
+
+	void setReadCallBack(const EventCallBack& b) {
 		readCallBack_ = b;
 	};
 
-	void setWriteCallBack(const EventCallBack& b){
+	void setWriteCallBack(const EventCallBack& b) {
 		writeCallBack_ = b;
 	};
 
-	void setCloseCallBack(const EventCallBack& b){
+	void setCloseCallBack(const EventCallBack& b) {
 		closeCallBack_ = b;
 	};
 
-	void setErrorCallBack(const EventCallBack& b){
+	void setErrorCallBack(const EventCallBack& b) {
 		errorCallBack_ = b;
 	}
 
@@ -41,7 +43,7 @@ public:
 		update();
 	};
 
-	bool isReading(){
+	bool isReading() {
 		return events_ & EPOLLIN;
 	};
 
@@ -54,11 +56,11 @@ public:
 		update();
 	};
 
-	bool isWriting(){
+	bool isWriting() {
 		return events_ & EPOLLOUT;
 	};
 
-	void disableAll(){
+	void disableAll() {
 		events_ = 0;
 		update();
 	};
