@@ -28,7 +28,7 @@ void Accepter::listen() {
 	listening_ = true;
 	chan_.enableRead();
 	LOG_INFO << "listens start,local address:"
-	         << toIpPort(sockaddr_cast(&addr));
+	         << socketops::toIpPort(sockaddr_cast(&addr));
 };
 
 void Accepter::handleRead() {
@@ -40,7 +40,7 @@ void Accepter::handleRead() {
 		} else {
 			socketops::close(connfd);
 			LOG_INFO << "New Connection , But no callback , close ,addr is"
-			         << toIpPort(sockaddr_cast(&addr));
+			         << socketops::toIpPort(sockaddr_cast(&addr));
 		}
 	} else {
 		if (errno == EMFILE) {
@@ -49,7 +49,7 @@ void Accepter::handleRead() {
 			::close(idleFd_);
 			::open("/dev/null", O_RDONLY | O_CLOEXEC);
 			LOG_INFO << "New Connection , But no socket descriper can use"
-			         << toIpPort(sockaddr_cast(&addr));
+			         << socketops::toIpPort(sockaddr_cast(&addr));
 		}
 	}
 };

@@ -8,7 +8,7 @@ namespace socketops {
 int creatEventFd() {
 	int eventfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
 	if (eventfd < 0) {
-		int err = getSocketError(errno);
+		int err = socketops::getSocketError(errno);
 		LOG_FATAL << "errno:"
 		          << err
 		          << " errmsg:" << strerror(err);
@@ -81,7 +81,7 @@ void listenOrDie(int socketfd) {
 	if (ret < 0) {
 		int err = getSocketError(errno);
 		LOG_FATAL << "listen error , addr is "
-		          << toIpPort(addr)
+		          << toIpPort(sockaddr_in_cast(getLocalAddr(socketfd)) )
 		          << " errno:" << err
 		          << " errmsg:" << strerror(err);
 	}
