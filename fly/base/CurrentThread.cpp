@@ -21,10 +21,8 @@ public:
 
 static thread_local ThreadInit init_;
 
-};
+}; // detail
 
-}
+} // CurrentThread
 
-
-
-}
+} // fly
