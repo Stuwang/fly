@@ -6,7 +6,7 @@ EventLoop::EventLoop()
 	: poller_(GetNewPoller())
 	, weakup_chan_(socketops::creatEventFd(), poller_ )
 	, looping_ (false)
-	, quit_ (true)
+	, quit_ (false)
 {
 	weakup_chan_.setReadCallBack(std::bind(&EventLoop::HandleRead, this));
 	weakup_chan_.enableRead();

@@ -40,12 +40,14 @@ public:
 		retireRead(sizeof(T) );
 		return value;
 	};
-private:
-	void retireWrite(size_t n);
+
 	char* data();
 	char* Peek();
+	
+private:
+	void retireWrite(size_t n);
 	void clearReaded();
-
+	
 	std::vector<char> buf_;
 	size_t ReadIndex_;
 	size_t WriteIndex_;

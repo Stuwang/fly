@@ -3,21 +3,23 @@
 
 #include <pthread.h>
 
-namespace fly{
+namespace fly {
 
-namespace CurrentThread{
-
-extern thread_local int tid_;
-
-inline int tid(){
-	return tid_;
-};
+namespace CurrentThread {
 
 namespace detail {
 
 int getTid();
 
 };
+
+int &ThreadTid();
+
+inline int tid() {
+	return pthread_self();
+};
+
+
 
 }
 
