@@ -16,7 +16,7 @@ int main() {
 	accepter.setNewConnectionCallBack([&service](int sockfd, const struct sockaddr_in & a) {
 		char buf[64];
 		socketops::toIpPort(buf, 64, socketops::sockaddr_cast(&a) );
-		std::cout << "GetConnection from " << buf << endl;
+		LOG_INFO << "New Connection ,address " << buf ; 
 		socketops::close(sockfd);
 	});
 	accepter.listen();
