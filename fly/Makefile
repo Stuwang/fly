@@ -1,4 +1,3 @@
-# ROOTDIR=/home/w/git/mynet/fly/fly
 ROOTDIR=$(shell pwd)
 
 include define.mk

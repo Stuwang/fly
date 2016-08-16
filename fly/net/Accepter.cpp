@@ -27,19 +27,29 @@ void Accepter::listen() {
 	socketops::listenOrDie(fd);
 	listening_ = true;
 	chan_.enableRead();
+	LOG_INFO << "listens start,local address:"
+	         << toIpPort(sockaddr_cast(&addr));
 };
 
 void Accepter::handleRead() {
 	struct sockaddr_in addr;
 	int connfd = socketops::accept(chan_.getfd(), &addr);
 	if (connfd > 0) {
-		if (callback_) callback_(connfd, addr);
+		if (callback_) {
+			callback_(connfd, addr);
+		} else {
+			socketops::close(connfd);
+			LOG_INFO << "New Connection , But no callback , close ,addr is"
+			         << toIpPort(sockaddr_cast(&addr));
+		}
 	} else {
 		if (errno == EMFILE) {
 			::close(idleFd_);
 			idleFd_ = socketops::accept(chan_.getfd(), &addr);
 			::close(idleFd_);
 			::open("/dev/null", O_RDONLY | O_CLOEXEC);
+			LOG_INFO << "New Connection , But no socket descriper can use"
+			         << toIpPort(sockaddr_cast(&addr));
 		}
 	}
 };

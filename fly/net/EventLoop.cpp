@@ -18,7 +18,7 @@ void EventLoop::Loop() {
 	looping_ = true;
 	while (!quit_) {
 		int num = poller_->poll(1000, &chans_);
-		IsCallFunctors_ =false;
+		IsCallFunctors_ = false;
 
 		if (num != 0) {
 			for (auto &i : chans_) {
@@ -30,16 +30,17 @@ void EventLoop::Loop() {
 	looping_ = false;
 };
 
-void EventLoop::DoFuncs(){
+void EventLoop::DoFuncs() {
 	std::list<Functor>	funcs;
 	{
 		LockGuard lock(mutex_);
 		funcs.swap(funcs_);
-		IsCallFunctors_ =true;
+		IsCallFunctors_ = true;
 	}
-	for(auto &i :funcs){
+	for (auto &i : funcs) {
 		i();
 	}
+	LOG_DEBUG << "Do Functor , thread id:" << pid_ ;
 };
 
 void EventLoop::HandleRead() {
@@ -47,7 +48,7 @@ void EventLoop::HandleRead() {
 	uint64_t one = 1;
 	size_t n = socketops::read(fd, &one, sizeof(uint64_t));
 	if (n != sizeof(one)) {
-
+		LOG_ERROR << "weak up read " << n << "bytes thread id:" << pid_ ;
 	}
 };
 
@@ -56,7 +57,7 @@ void EventLoop::WeakUp() {
 	uint64_t one = 1;
 	size_t n = socketops::write(fd, &one, sizeof(uint64_t));
 	if (n != sizeof(one)) {
-
+		LOG_ERROR << "weak up write " << n << "bytes thread id:" << pid_ ;
 	}
 };
 
@@ -69,20 +70,20 @@ bool EventLoop::IsInLoop() const {
 	return pid_ == CurrentThread::tid();
 };
 
-void EventLoop::runInLoop(const Functor& func){
-	if(IsInLoop()){
+void EventLoop::runInLoop(const Functor& func) {
+	if (IsInLoop()) {
 		func();
-	}else{
+	} else {
 		queueInLoop(func);
 	}
 };
 
-void EventLoop::queueInLoop(const Functor& func){
+void EventLoop::queueInLoop(const Functor& func) {
 	{
 		LockGuard lock(mutex_);
 		funcs_.push_back(func);
 	}
-	if(!IsInLoop() || IsCallFunctors_){
+	if (!IsInLoop() || IsCallFunctors_) {
 		WeakUp();
 	}
 };

@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 
+#include <string>
 #include <arpa/inet.h>
 #include <string.h>
 #include <netinet/tcp.h>
@@ -13,6 +14,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <sys/eventfd.h>
+
+#include <base/Logger.h>
 
 namespace fly {
 
@@ -48,9 +51,13 @@ struct sockaddr_in getPeerAddr(int sockfd) ;
 
 void toIpPort(char* buf, size_t size, const sockaddr *addr) ;
 
+std::string toIpPort(const sockaddr *addr);
+
 void toIp(char *buf, size_t size, const struct sockaddr*addr) ;
 
 void fromIpPort(const char* ip, uint16_t port, struct sockaddr_in * addr);
+
+struct sockaddr_in fromIpPort(const char* ip, uint16_t port);
 
 const struct sockaddr* sockaddr_cast(const struct sockaddr_in* addr);
 struct sockaddr* sockaddr_cast(struct sockaddr_in* addr);

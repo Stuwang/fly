@@ -2,6 +2,7 @@
 #define FLY_ACCEPTER_H__
 
 #include <base/Types.h>
+#include <base/Logger.h>
 
 #include <net/Channel.h>
 #include <net/SocketOps.h>
@@ -26,6 +27,7 @@ public:
 private:
 	void handleRead();
 
+	struct sockaddr ad
 	EventLoop *loop_;
 	Channel chan_;
 	NewConnetionCallBack callback_;

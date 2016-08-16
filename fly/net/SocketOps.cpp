@@ -8,7 +8,10 @@ namespace socketops {
 int creatEventFd() {
 	int eventfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
 	if (eventfd < 0) {
-
+		int err = getSocketError(errno);
+		LOG_FATAL << "errno:"
+		          << err
+		          << " errmsg:" << strerror(err);
 	}
 	return eventfd;
 };
@@ -50,7 +53,10 @@ void setKeepAlive(int socketfd, bool on) {
 int creatNoBlockOrDie() {
 	int socketfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
 	if (socketfd < 0) {
-
+		int err = getSocketError(errno);
+		LOG_FATAL << "create socket error,die errno:"
+		          << err
+		          << " errmsg:" << strerror(err);
 	}
 	return socketfd;
 };
@@ -62,7 +68,10 @@ int connect(int socketfd, const sockaddr* addr) {
 void bindOrDie(int socketfd, const sockaddr* addr) {
 	int ret = ::bind(socketfd, addr, sizeof(struct sockaddr_in));
 	if (ret < 0 ) {
-
+		int err = getSocketError(errno);
+		LOG_FATAL << "bind error , addr is " << toIpPort(addr)
+		          << " errno:" << err
+		          << " errmsg:" << strerror(err);
 	}
 };
 
@@ -70,7 +79,11 @@ void bindOrDie(int socketfd, const sockaddr* addr) {
 void listenOrDie(int socketfd) {
 	int ret = ::listen(socketfd, SOMAXCONN);
 	if (ret < 0) {
-
+		int err = getSocketError(errno);
+		LOG_FATAL << "listen error , addr is "
+		          << toIpPort(addr)
+		          << " errno:" << err
+		          << " errmsg:" << strerror(err);
 	}
 };
 
@@ -121,12 +134,18 @@ ssize_t write(int socketfd, const void *buf, size_t cout) {
 
 void close(int socketfd) {
 	if (::close(socketfd) < 0) {
-
+		LOG_FATAL << "close error , addr is " << toIpPort(addr)
+		          << " errno:" << err
+		          << " errmsg:" << strerror(err);
 	}
 };
 
 void shutdownWrite(int socketfd) {
 	if (::shutdown(socketfd, SHUT_WR) < 0) {
+		int err = getSocketError(errno);
+		LOG_FATAL << "shutdownWrite error , addr is " << toIpPort(addr)
+		          << " errno:" << err
+		          << " errmsg:" << strerror(err);
 
 	}
 };
@@ -146,7 +165,9 @@ struct sockaddr_in getLocalAddr(int socketfd)  {
 	bzero(&addr, sizeof(addr));
 	socklen_t len = static_cast<socklen_t>(sizeof(struct sockaddr));
 	if (::getsockname(socketfd, sockaddr_cast(&addr), &len) < 0) {
-
+		LOG_FATAL << "getLocalAddr error , addr is " << toIpPort(addr)
+		          << " errno:" << err
+		          << " errmsg:" << strerror(err);
 	}
 	return addr;
 };
@@ -155,7 +176,9 @@ struct sockaddr_in getPeerAddr(int socketfd) {
 	bzero(&addr, sizeof(addr));
 	socklen_t len = static_cast<socklen_t>(sizeof(struct sockaddr));
 	if (::getpeername(socketfd, sockaddr_cast(&addr), &len) < 0) {
-
+		LOG_FATAL << "getPeerAddr error , addr is " << toIpPort(addr)
+		          << " errno:" << err
+		          << " errmsg:" << strerror(err);
 	}
 	return addr;
 };
@@ -165,6 +188,16 @@ void toIpPort(char* buf, size_t size, const sockaddr *addr) {
 	size_t end = strlen(buf);
 	uint16_t port = ntohs(sockaddr_in_cast(addr)->sin_port);
 	snprintf(buf + end, size - end, ":%u", port);
+};
+
+std::string toIpPort(const sockaddr *addr) {
+	char buf[64];
+	const int size = 64;
+	toIp(buf, size, addr);
+	size_t end = strlen(buf);
+	uint16_t port = ntohs(sockaddr_in_cast(addr)->sin_port);
+	snprintf(buf + end, size - end, ":%u", port);
+	return std::string(buf);
 };
 
 void toIp(char *buf, size_t size, const struct sockaddr*addr) {
@@ -177,8 +210,18 @@ void fromIpPort(const char* ip, uint16_t port, struct sockaddr_in * addr) {
 	addr->sin_family = AF_INET;
 	addr->sin_port = htons(port);
 	if (::inet_pton(AF_INET, ip, &addr->sin_addr) <= 0 ) {
-
+		LOG_FATAL << "error ip and port " << ip << " " << port ;
 	}
+};
+
+struct sockaddr_in fromIpPort(const char* ip, uint16_t port) {
+	struct sockaddr_in addr;
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	if (::inet_pton(AF_INET, ip, &addr.sin_addr) <= 0 ) {
+		LOG_FATAL << "error ip and port " << ip << " " << port ;
+	}
+	return addr;
 };
 
 const struct sockaddr* sockaddr_cast(const struct sockaddr_in* addr) {

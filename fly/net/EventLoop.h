@@ -4,6 +4,7 @@
 #include <list>
 
 #include <base/Mutex.h>
+#include <base/Logger.h>
 #include <base/Condition.h>
 #include <base/CurrentThread.h>
 
