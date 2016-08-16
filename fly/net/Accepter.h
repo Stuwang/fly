@@ -27,7 +27,7 @@ public:
 private:
 	void handleRead();
 
-	struct sockaddr ad
+	struct sockaddr addr;
 	EventLoop *loop_;
 	Channel chan_;
 	NewConnetionCallBack callback_;

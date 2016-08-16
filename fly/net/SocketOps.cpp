@@ -80,8 +80,9 @@ void listenOrDie(int socketfd) {
 	int ret = ::listen(socketfd, SOMAXCONN);
 	if (ret < 0) {
 		int err = getSocketError(errno);
+		struct sockaddr_in addr = getLocalAddr(socketfd);
 		LOG_FATAL << "listen error , addr is "
-		          << toIpPort(sockaddr_in_cast(getLocalAddr(socketfd)) )
+		          << toIpPort(sockaddr_cast(&addr) )
 		          << " errno:" << err
 		          << " errmsg:" << strerror(err);
 	}
@@ -134,7 +135,8 @@ ssize_t write(int socketfd, const void *buf, size_t cout) {
 
 void close(int socketfd) {
 	if (::close(socketfd) < 0) {
-		LOG_FATAL << "close error , addr is " << toIpPort(addr)
+		int err = getSocketError(errno);
+		LOG_FATAL << "close error "
 		          << " errno:" << err
 		          << " errmsg:" << strerror(err);
 	}
@@ -143,7 +145,7 @@ void close(int socketfd) {
 void shutdownWrite(int socketfd) {
 	if (::shutdown(socketfd, SHUT_WR) < 0) {
 		int err = getSocketError(errno);
-		LOG_FATAL << "shutdownWrite error , addr is " << toIpPort(addr)
+		LOG_FATAL << "shutdownWrite error" 
 		          << " errno:" << err
 		          << " errmsg:" << strerror(err);
 
@@ -165,7 +167,8 @@ struct sockaddr_in getLocalAddr(int socketfd)  {
 	bzero(&addr, sizeof(addr));
 	socklen_t len = static_cast<socklen_t>(sizeof(struct sockaddr));
 	if (::getsockname(socketfd, sockaddr_cast(&addr), &len) < 0) {
-		LOG_FATAL << "getLocalAddr error , addr is " << toIpPort(addr)
+		int err = getSocketError(errno);
+		LOG_FATAL << "getLocalAddr error , addr is " << toIpPort(sockaddr_cast(&addr))
 		          << " errno:" << err
 		          << " errmsg:" << strerror(err);
 	}
@@ -176,7 +179,8 @@ struct sockaddr_in getPeerAddr(int socketfd) {
 	bzero(&addr, sizeof(addr));
 	socklen_t len = static_cast<socklen_t>(sizeof(struct sockaddr));
 	if (::getpeername(socketfd, sockaddr_cast(&addr), &len) < 0) {
-		LOG_FATAL << "getPeerAddr error , addr is " << toIpPort(addr)
+		int err = getSocketError(errno);
+		LOG_FATAL << "getPeerAddr error , addr is " << toIpPort(sockaddr_cast(&addr))
 		          << " errno:" << err
 		          << " errmsg:" << strerror(err);
 	}
