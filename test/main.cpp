@@ -1,37 +1,24 @@
-// #include <base/Logger.h>
-// #include <base/Endian.h>
+#include <iostream>
 
-// #include <arpa/inet.h>
-
-// #include <iostream>
+#include <base/fly_base.h>
+#include <net/fly_net.h>
 
 using namespace std;
-
-struct fuck {
-	fuck() {data = 0;};
-	int &Get() {return data;};
-	int data;
-};
-
-void test() {
-	int i = 1;
-	if (*(char*)&i > *( ((char*)&i) + 2) ) {
-		std::cout << "xiaoduan";
-	} else {
-		std::cout << "daduan";
-	}
-};
+using namespace fly;
 
 int main() {
-	int i = fly::NetToHost(fly::HostToNet(1));
-	printf("%08X\n", 1);
-	printf("%08X\n", i);
-	int l = ntohl(1);
-	assert(i == l);
-	test();
+
+	EventLoop service;
+
+	struct sockaddr_in addr;
+	socketops::fromIpPort("127.0.0.1", 8060, &addr);
+	Accepter accepter(&service, addr, false);
+	accepter.setNewConnectionCallBack([&service](int sockfd, const struct sockaddr_in & a) {
+		char buf[64];
+		socketops::toIpPort(buf, 64, socketops::sockaddr_cast(&a) );
+		LOG_INFO << "New Connection ,address " << buf ; 
+		socketops::close(sockfd);
+	});
+	accepter.listen();
+	service.Loop();
 };
-
-#define  err(msg)\
-perror("msg");
-
-err(aaaa);

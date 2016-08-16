@@ -31,6 +31,7 @@ Logger::Logger(const char* file, int line, int level)
 };
 
 Logger::~Logger() {
+	stream_ << '\n';
 	if (level_ < defaultLevel) {
 		return;
 	};

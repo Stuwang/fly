@@ -1,6 +1,9 @@
+# ROOTDIR=/home/w/git/mynet/fly/fly
+ROOTDIR=$(shell pwd)
+
 include define.mk
 
-default:all
+.DEFAULT: all
 
 SUBDIRS=`ls -d */`
 

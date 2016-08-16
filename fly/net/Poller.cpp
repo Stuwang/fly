@@ -34,7 +34,7 @@ void Poller::fillChanS(int num, ChannelList *chs) const {
 
 void Poller::updateChannel(Channel* chan) {
 	int fd = chan->getfd();
-	if (chan->HasAdded()) {
+	if (!chan->HasAdded()) {
 		channels_[fd] = chan;
 		update(EPOLL_CTL_ADD, chan);
 	} else {

@@ -1,10 +1,12 @@
+ROOTDIR=$(shell pwd)/..
+
 include ../define.mk
 
-OBJ=Condition.o Mutex.o LogStream.o Thread.o Logger.o Buffer.o
+OBJ=Condition.o Mutex.o LogStream.o Thread.o Logger.o Buffer.o CurrentThread.o
 
 STATIC_LIB=libfly_base.a
 
-default:all
+.DEFAULT:all
 
 SUBDIRS=`ls -d */`
 

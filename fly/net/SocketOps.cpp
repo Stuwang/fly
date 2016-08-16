@@ -5,9 +5,9 @@ namespace fly {
 
 namespace socketops {
 
-int creatEventFd(){
+int creatEventFd() {
 	int eventfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
-	if(eventfd < 0){
+	if (eventfd < 0) {
 
 	}
 	return eventfd;
@@ -115,7 +115,7 @@ ssize_t readv(int socketfd, const struct iovec *iov, int iovcnt) {
 	return ::readv(socketfd, iov, iovcnt);
 };
 
-ssize_t write(int socketfd, void *buf, size_t cout) {
+ssize_t write(int socketfd, const void *buf, size_t cout) {
 	return ::write(socketfd, buf, cout);
 };
 
@@ -189,7 +189,7 @@ struct sockaddr* sockaddr_cast(struct sockaddr_in* addr) {
 	return static_cast<struct sockaddr*>(static_cast<void*>(addr));
 };
 
-const struct sockaddr_in* sockaddr_cast(const struct sockaddr* addr) {
+const struct sockaddr_in* sockaddr_in_cast(const struct sockaddr* addr) {
 	return static_cast<const struct sockaddr_in*>(static_cast<const void*>(addr));
 };
 
