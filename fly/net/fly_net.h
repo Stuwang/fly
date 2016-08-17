@@ -7,6 +7,7 @@
 #include <net/EventLoop.h>
 #include <net/Poller.h>
 #include <net/SocketOps.h>
+#include <net/help.h>
 #include <net/TcpConnection.h>
 
 #endif

@@ -2,31 +2,17 @@
 
 namespace fly {
 
-namespace  CurrentThread {
-
-int& ThreadTid() {
-	static thread_local int tid_;
+pthread_t& ThreadTid() {
+	static thread_local pthread_t tid_;
 	return tid_;
-}
-
-
-namespace detail {
-
-int getTid() {
-	return pthread_self();
 };
 
-class ThreadInit {
-public:
-	ThreadInit() {
-		ThreadTid() = getTid();
-	};
+pthread_t tid() {
+	return ThreadTid();
 };
 
-static thread_local ThreadInit init_;
-
-}; // detail
-
-} // CurrentThread
+ThreadInit::ThreadInit() {
+	ThreadTid() = pthread_self();
+};
 
 } // fly

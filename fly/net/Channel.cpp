@@ -15,6 +15,8 @@ Channel::Channel(int sockfd, Poller* poller)
 Channel::~Channel() {
 	disableAll();
 	remove();
+	socketops::close(getfd());
+	LOG_INFO << "Channel close";
 };
 
 void Channel::update() {
@@ -28,21 +30,51 @@ void Channel::remove() {
 };
 
 void Channel::handleEvents() {
-	if (r_events_ & (EPOLLIN | EPOLLPRI) ) {
-		if (readCallBack_) readCallBack_();
+	LOG_INFO << "handle event " << sockfd_ << " events " << EventToString(r_events_);
+
+	if ( (r_events_ & EPOLLRDHUP ) && (r_events_ & EPOLLIN) ) {
+		LOG_INFO << "handle close" ;
+		if (closeCallBack_) {
+			closeCallBack_();
+			return;
+		}
+	}
+
+	if ( r_events_ & EPOLLIN  ) {
+		LOG_INFO << "handle read" ;
+		if (readCallBack_) {
+			readCallBack_();
+			return;
+		}
 	}
 
 	if (r_events_ & EPOLLOUT ) {
+		LOG_INFO << "handle write" ;
 		if (writeCallBack_) writeCallBack_();
 	}
 
 	if (r_events_ & EPOLLERR) {
+		LOG_INFO << "handle error" ;
 		if (errorCallBack_) errorCallBack_();
 	}
+};
 
-	if ( (r_events_ & EPOLLHUP ) && !(r_events_ & EPOLLIN) ) {
-		if (closeCallBack_) closeCallBack_();
+std::string Channel::EventToString(int event) {
+	std::string msg;
+
+#define TEST(e)\
+	if (event & e) {\
+		msg += #e;\
+		msg+= " ";\
 	}
+
+	TEST(EPOLLHUP);
+	TEST(EPOLLIN);
+	TEST(EPOLLOUT);
+	TEST(EPOLLERR);
+
+#undef TEST
+	return msg;
 };
 
 }

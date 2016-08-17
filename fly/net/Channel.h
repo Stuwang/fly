@@ -4,6 +4,9 @@
 #include <functional>
 
 #include <net/Poller.h>
+#include <net/SocketOps.h>
+#include <base/Types.h>
+#include <base/Logger.h>
 
 namespace fly {
 
@@ -11,7 +14,7 @@ class Poller;
 
 typedef std::function<void()> EventCallBack;
 
-class Channel {
+class Channel : noncopyable {
 public:
 
 	Channel(int sockfd, Poller* poller);
@@ -87,6 +90,8 @@ public:
 	void remove();
 
 	void handleEvents();
+	std::string EventToString(int event);
+
 private:
 	int events_;
 	int r_events_;

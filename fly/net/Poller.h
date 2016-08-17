@@ -8,6 +8,8 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 
+#include <base/Types.h>
+
 #include <net/Channel.h>
 
 namespace fly {
@@ -16,7 +18,7 @@ class Channel;
 
 typedef std::vector<Channel*> ChannelList;
 
-class Poller {
+class Poller : noncopyable {
 public:
 	Poller();
 	~Poller();
@@ -26,7 +28,7 @@ public:
 	void removeChannel(Channel* chan);
 	bool hasChannel(Channel* chan);
 private:
-	void update(int operation,Channel *chan);
+	void update(int operation, Channel *chan);
 	void fillChanS(int num, ChannelList*) const;
 
 	typedef std::map<int, Channel*> ChannelMap;

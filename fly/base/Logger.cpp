@@ -6,16 +6,34 @@
 
 namespace fly {
 
+std::string& LogBuf() {
+	static std::string buf_;
+	//buf_.resove(17 * 1024);
+	return buf_;
+}
+
 void defaultOutput(const char* msg, int len)
 {
-	size_t n = fwrite(msg, 1, len, stdout);
-	//FIXME check n
+	auto &buf = LogBuf();
+	// if (buf.size() >= 8 * 1024) {
+	buf.append(msg, len);
+	size_t n = fwrite(buf.data(), 1, buf.size(), stdout);
 	(void)n;
+	std::string().swap(buf);
+	// } else {
+	// 	buf.append(msg, len);
+	// }
+
+	//FIXME check n
+
 }
 
 void defaultFlush()
 {
+	auto &buf = LogBuf();
+	size_t n = fwrite(buf.data(), 1, buf.size(), stdout);
 	fflush(stdout);
+	(void)n;
 }
 
 OutputFunc Logger::g_output = defaultOutput;

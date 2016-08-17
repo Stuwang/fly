@@ -12,7 +12,7 @@ public:
   // Constructor.
   signal_init()
   {
-    std::signal(Signal, SIG_IGN);
+    ::signal(Signal, SIG_IGN);
   }
 };
 

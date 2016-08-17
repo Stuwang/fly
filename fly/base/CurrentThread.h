@@ -5,23 +5,12 @@
 
 namespace fly {
 
-namespace CurrentThread {
+pthread_t tid();
 
-namespace detail {
-
-int getTid();
-
+class ThreadInit {
+public:
+	ThreadInit();
 };
-
-int &ThreadTid();
-
-inline int tid() {
-	return pthread_self();
-};
-
-
-
-}
 
 }
 

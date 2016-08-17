@@ -7,10 +7,10 @@ SUBDIRS=`ls -d */`
 TARGET=main
 
 all:main.cpp
-	clang++ main.cpp -std=c++11 -lpthread -I../fly -lfly_base -lfly_net -L../fly/base -L../fly/net -o ${TARGET}
+	clang++ main.cpp -O3 -std=c++11 -lpthread -I../fly -lfly -L../fly/ -o ${TARGET}
 
 lib:
-	cd ../fly && make all 
+	cd ../fly && make all  && make lib
 
 cleanlib:
 	cd ../fly && make clean

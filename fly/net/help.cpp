@@ -2,6 +2,6 @@
 
 namespace fly{
 
-signal_init<> _signal_init_;
+// signal_init<> _signal_init_;
 
 }

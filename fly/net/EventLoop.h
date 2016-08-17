@@ -7,6 +7,7 @@
 #include <base/Logger.h>
 #include <base/Condition.h>
 #include <base/CurrentThread.h>
+#include <base/Types.h>
 
 #include <net/Channel.h>
 #include <net/Poller.h>
@@ -16,14 +17,14 @@ namespace fly {
 
 typedef std::function<void()> Functor;
 
-class EventLoop {
+class EventLoop : noncopyable {
 public:
 	EventLoop();
 	~EventLoop();
-	
+
 	void Loop();
 	void DoFuncs();
-	
+
 	void HandleRead();
 	void WeakUp();
 	void quit();

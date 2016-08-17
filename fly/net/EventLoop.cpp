@@ -7,6 +7,7 @@ EventLoop::EventLoop()
 	, weakup_chan_(socketops::creatEventFd(), poller_ )
 	, looping_ (false)
 	, quit_ (false)
+	, pid_(tid())
 {
 	weakup_chan_.setReadCallBack(std::bind(&EventLoop::HandleRead, this));
 	weakup_chan_.enableRead();
@@ -17,9 +18,10 @@ EventLoop::~EventLoop() {};
 void EventLoop::Loop() {
 	looping_ = true;
 	while (!quit_) {
-		int num = poller_->poll(1000, &chans_);
+		chans_.clear();
+		int num = poller_->poll(-1, &chans_);
 		IsCallFunctors_ = false;
-
+		LOG_DEBUG << "poll size " << chans_.size() ;
 		if (num != 0) {
 			for (auto &i : chans_) {
 				i->handleEvents();
@@ -40,7 +42,7 @@ void EventLoop::DoFuncs() {
 	for (auto &i : funcs) {
 		i();
 	}
-	LOG_DEBUG << "Do Functor , thread id:" << pid_ ;
+	//LOG_DEBUG << "Do Functor , thread id:" << pid_ ;
 };
 
 void EventLoop::HandleRead() {
@@ -48,8 +50,9 @@ void EventLoop::HandleRead() {
 	uint64_t one = 1;
 	size_t n = socketops::read(fd, &one, sizeof(uint64_t));
 	if (n != sizeof(one)) {
-		LOG_ERROR << "weak up read " << n << "bytes thread id:" << pid_ ;
+		// LOG_ERROR << "weak up read " << n << "bytes thread id:" << pid_ ;
 	}
+	LOG_INFO << "weak up read " << n << "bytes thread id:" << pid_ ;
 };
 
 void EventLoop::WeakUp() {
@@ -57,8 +60,9 @@ void EventLoop::WeakUp() {
 	uint64_t one = 1;
 	size_t n = socketops::write(fd, &one, sizeof(uint64_t));
 	if (n != sizeof(one)) {
-		LOG_ERROR << "weak up write " << n << "bytes thread id:" << pid_ ;
+		// LOG_ERROR << "weak up write " << n << "bytes thread id:" << pid_ ;
 	}
+	LOG_INFO << "weak up send " << n << "bytes thread id:" << pid_ ;
 };
 
 void EventLoop::quit() {
@@ -67,7 +71,7 @@ void EventLoop::quit() {
 };
 
 bool EventLoop::IsInLoop() const {
-	return pid_ == CurrentThread::tid();
+	return pid_ == tid();
 };
 
 void EventLoop::runInLoop(const Functor& func) {

@@ -23,6 +23,9 @@ class TcpConnection :
 public:
 	TcpConnection(EventLoop* loop, int fd, const std::string& name = "");
 	~TcpConnection();
+
+	void Start();
+
 	EventLoop *getEventLoop();
 	const std::string & name() const;
 	const struct sockaddr_in& localAddress() const ;

@@ -5,7 +5,8 @@ namespace fly {
 using namespace socketops;
 
 Accepter::Accepter(EventLoop* loop, const struct sockaddr_in& addr, bool reuseport)
-	: loop_(loop)
+	: addr_(*sockaddr_cast(&addr))
+	, loop_(loop)
 	, chan_(socketops::creatNoBlockOrDie(), loop_->getPoller	() )
 	, listening_(false)
 	, idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
@@ -30,7 +31,7 @@ void Accepter::listen() {
 	listening_ = true;
 	chan_.enableRead();
 	LOG_INFO << "listens start,local address:"
-	         << socketops::toIpPort(&addr);
+	         << socketops::toIpPort(&addr_);
 };
 
 void Accepter::handleRead() {

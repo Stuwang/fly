@@ -22,6 +22,10 @@ TcpConnection::TcpConnection(EventLoop* loop,
 	socketops::setNoDelay(sockfd_, true);
 	socketops::setKeepAlive(sockfd_, true);
 
+
+};
+
+void TcpConnection::Start() {
 	startRead();
 
 	if (newCb_) newCb_(shared_from_this());
@@ -57,6 +61,8 @@ void TcpConnection::Send(const void* data, size_t len) {
 
 void TcpConnection::Send(const StringView& data) {
 	// if in current thread loop.then send
+
+	loop_->WeakUp();
 	if (loop_->IsInLoop()) {
 		SendInLoop(data.data(), data.size());
 	} else {
@@ -72,11 +78,19 @@ void TcpConnection::Send(Buffer& data) {
 };
 
 void TcpConnection::startRead() {
-	loop_->runInLoop(std::bind(&TcpConnection::SetReadInLoop, this, true) );
+	if (loop_->IsInLoop()) {
+		SetReadInLoop(true);
+	} else {
+		loop_->queueInLoop(std::bind(&TcpConnection::SetReadInLoop, this, true));
+	}
 };
 
 void TcpConnection::stopRead() {
-	loop_->runInLoop(std::bind(&TcpConnection::SetReadInLoop, this, false));
+	if (loop_->IsInLoop()) {
+		SetReadInLoop(false);
+	} else {
+		loop_->queueInLoop(std::bind(&TcpConnection::SetReadInLoop, this, false));
+	}
 };
 
 bool TcpConnection::isReading()const {
@@ -93,11 +107,19 @@ void  TcpConnection::SetReadInLoop(bool on) {
 };
 
 void TcpConnection::startListenWrite() {
-	loop_->runInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, true));
+	if (loop_->IsInLoop()) {
+		SetWriteInLoop(true);
+	} else {
+		loop_->queueInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, true));
+	}
 };
 
 void TcpConnection::endListenWrite() {
-	loop_->runInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, false));
+	if (loop_->IsInLoop()) {
+		SetWriteInLoop(false);
+	} else {
+		loop_->queueInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, false));
+	}
 };
 
 bool TcpConnection::isWriting()const {
@@ -155,9 +177,9 @@ void TcpConnection::SendInLoop_helper(StringView data) {
 };
 
 void TcpConnection::shutdown() {
-	loop_->runInLoop(std::bind(
-	                     &TcpConnection::shutdownInLoop,
-	                     shared_from_this()));
+	loop_->queueInLoop(std::bind(
+	                       &TcpConnection::shutdownInLoop,
+	                       shared_from_this()));
 };
 
 void TcpConnection::shutdownInLoop() {
@@ -181,38 +203,81 @@ void TcpConnection::forceCloseInLoop()
 }
 
 void TcpConnection::handRead() {
-	static const int extraBufSize = 6 * 1024;
+
+	static const int extraBufSize = 64 * 1024;
 	char buf[extraBufSize];
-	struct iovec vec[2];
-	const size_t writable = inputBuffer_.WriteAbleBytes();
-	vec[0].iov_base = inputBuffer_.Peek();
-	vec[0].iov_len = writable;
-	vec[1].iov_base = buf;
-	vec[1].iov_len = extraBufSize;
-	const ssize_t n = socketops::readv(chan_->getfd(), vec, 2);
+	const int n = socketops::read(chan_->getfd(), buf, extraBufSize);
 	if (n < 0) {
-		if (readCb_) readCb_(shared_from_this());
-	} else if (n <= writable) {
-		inputBuffer_.retireWriteAble(n);
+		LOG_DEBUG << "read " << n << " error " << errno << " msg " << strerror(errno)  ;
+		switch (errno) {
+		case EAGAIN:
+		case EINTR:
+			break;
+		case EBADF:
+		case EFAULT:
+		case EINVAL:
+		case EIO:
+		case EISDIR:
+			handClose();
+			break;
+		default:
+			break;
+		}
+	} else if (n == 0) {
+		LOG_DEBUG << "read return 0 and close socket is" << chan_->getfd();
+		handClose();
 	} else {
-		inputBuffer_.retireWriteAble(writable);
-		inputBuffer_.append(buf, n - writable);
+		inputBuffer_.append(buf, n);
+		if (readCb_) {
+			readCb_(shared_from_this());
+		}
 	}
+
+
 };
 
 void TcpConnection::handWrite() {
 	size_t len = outputBuffer_.ReadAbleBytes();
-	size_t size = socketops::write(chan_->getfd(), outputBuffer_.data(), len);
-	outputBuffer_.retireRead(size);
-	if (0 == outputBuffer_.ReadAbleBytes()) {
-		chan_->disableWrite();
-		if (writeCb_) writeCb_(shared_from_this());
+	const int size = socketops::write(chan_->getfd(), outputBuffer_.data(), len);
+	if (size > 0 ) {
+		outputBuffer_.retireRead(size);
+		if (0 == outputBuffer_.ReadAbleBytes()) {
+			chan_->disableWrite();
+			if (writeCb_) {
+				writeCb_(shared_from_this());
+			}
+		}
+	} else if (size == 0) {
+		handClose();
+	} else if (size == -1) {
+		switch (errno) {
+		case EAGAIN:
+		case EINTR:
+		case ENOSPC:
+			break;
+		case EBADF:
+		case EDESTADDRREQ:
+		case EDQUOT:
+		case EFAULT:
+		case EFBIG:
+		case EINVAL:
+		case EIO:
+		case EPIPE:
+			handClose();
+			break;
+		default:
+			break;
+
+		}
 	}
 };
 
 void TcpConnection::handClose() {
 	assert(loop_->IsInLoop());
-	if (closeCb_) closeCb_(shared_from_this());
+	if (closeCb_) {
+		LOG_DEBUG << "close socket";
+		closeCb_(shared_from_this());
+	}
 };
 
 void TcpConnection::handError() {

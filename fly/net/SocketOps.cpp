@@ -145,7 +145,7 @@ void close(int socketfd) {
 void shutdownWrite(int socketfd) {
 	if (::shutdown(socketfd, SHUT_WR) < 0) {
 		int err = getSocketError(errno);
-		LOG_FATAL << "shutdownWrite error" 
+		LOG_FATAL << "shutdownWrite error"
 		          << " errno:" << err
 		          << " errmsg:" << strerror(err);
 

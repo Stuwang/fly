@@ -16,7 +16,7 @@ Poller::~Poller() {
 };
 
 int Poller::poll(int timeout, ChannelList *chans) {
-	int num = ::epoll_wait(epollfd_, &*events_.begin(), static_cast<int>(channels_.size()), timeout );
+	int num = ::epoll_wait(epollfd_, &*events_.begin(), static_cast<int>(EventsInitSize), timeout );
 	if ( num > 0 ) {
 		fillChanS(num, chans);
 	}
