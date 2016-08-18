@@ -39,13 +39,16 @@
 > + 获取port
 
 + mutex cond 封装
++ 完成loop，channel，tcpconnection
+
+
 
 -----------------------
 
 #### 下一步工作计划：
 
 + 完善日志库
-+ 完成loop，channel，tcpconnection，connecter server类
++ connecter server类
 + 实现时间日期相关处理
 + 实现定时器
 
