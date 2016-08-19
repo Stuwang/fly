@@ -12,7 +12,7 @@ STATIC_LIB=libfly_net.a
 SUBDIRS=`ls -d */`
 
 all:${OBJ}
-	${AR} ${AR_FLAG} ${STATIC_LIB}  ${OBJ}
+#	${AR} ${AR_FLAG} ${STATIC_LIB}  ${OBJ}
 
 clean:
 	$(call clean) \

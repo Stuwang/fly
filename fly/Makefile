@@ -7,9 +7,7 @@ include define.mk
 SUBDIRS=`ls -d */`
 
 all:
-	$(call make_subdir , all) 
-
-lib:
+	$(call make_subdir , all) \
 	${AR} ${AR_FLAG} libfly.a base/*.o net/*.o
 
 clean:
