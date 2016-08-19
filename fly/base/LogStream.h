@@ -96,6 +96,30 @@ public:
 	static const int MaxNumSize = 64;
 };
 
+class fmt{
+	public:
+		template<class T>
+		fmt(const char *f,const T& data){
+			size_ = snprintf(f,sizeof(buf_),f,data);
+		};
+
+		const char* data()const{
+			return buf_;
+		};
+
+		int size() const {
+			return size_;
+		};
+	private:
+		char buf_[64];
+		int size_;
+};
+
+LogStream& operator<< (LogStream& out,const fmt& f){
+	out.append(f.data(),f.size());
+	return out;
+};
+
 }
 
 
