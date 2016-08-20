@@ -12,4 +12,4 @@ all:
 
 clean:
 	$(call clean) \
-	rm main *.o *.out ${OBJ} -rf
+	rm main *.o *.out libfly.a ${OBJ} -rf

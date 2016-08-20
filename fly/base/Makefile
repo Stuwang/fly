@@ -2,7 +2,7 @@ ROOTDIR=$(shell pwd)/..
 
 include ../define.mk
 
-OBJ=Condition.o Mutex.o LogStream.o Thread.o Logger.o Buffer.o CurrentThread.o
+OBJ=Condition.o Mutex.o LogStream.o Thread.o Logger.o Buffer.o CurrentThread.o Date.o Time.o
 
 STATIC_LIB=libfly_base.a
 

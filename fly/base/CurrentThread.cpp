@@ -1,5 +1,7 @@
 #include <base/CurrentThread.h>
 
+#include <iostream>
+
 namespace fly {
 
 pthread_t& ThreadTid() {
@@ -13,6 +15,7 @@ pthread_t tid() {
 
 ThreadInit::ThreadInit() {
 	ThreadTid() = pthread_self();
+	LOG_INFO << "thread id init... id:" << ThreadTid();
 };
 
 } // fly

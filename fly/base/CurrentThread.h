@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 
+#include <base/Logger.h>
+
 namespace fly {
 
 pthread_t tid();

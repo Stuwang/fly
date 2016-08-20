@@ -2,6 +2,7 @@
 #define FLY_LOGSTREAM_H__
 
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <string>
 #include <algorithm>
@@ -100,7 +101,7 @@ class fmt{
 	public:
 		template<class T>
 		fmt(const char *f,const T& data){
-			size_ = snprintf(f,sizeof(buf_),f,data);
+			size_ = snprintf(buf_,sizeof(buf_),f,data);
 		};
 
 		const char* data()const{
@@ -115,7 +116,7 @@ class fmt{
 		int size_;
 };
 
-LogStream& operator<< (LogStream& out,const fmt& f){
+inline LogStream& operator<< (LogStream& out,const fmt& f){
 	out.append(f.data(),f.size());
 	return out;
 };

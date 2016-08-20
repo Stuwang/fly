@@ -14,7 +14,7 @@ std::vector<TcpConPtr> &Conns() {
 
 int main() {
 	signal_init<> _signal_init_;
-	ThreadInit init_;
+	ThreadInit _init;
 
 	EventLoop service;
 
@@ -53,6 +53,7 @@ int main() {
 		ptr->Start();
 		Conns().push_back(ptr);
 	});
+	LOG_INFO << fmt("%p", (void*)&service);
 	accepter.listen();
 	service.Loop();
 };
