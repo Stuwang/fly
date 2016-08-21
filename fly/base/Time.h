@@ -1,6 +1,11 @@
 #ifndef FLY_TIME_H__
 #define FLY_TIME_H__
 
+#include <string>
+#include <sys/time.h>
+
+#include <base/Date.h>
+
 namespace fly {
 
 // min is ms
@@ -37,82 +42,103 @@ type &operator/=(int right) {							\
 	return *this;										\
 };
 
-class Hours {
-public:
-	OPERATOR_HELPER(Hours, data_)
-	long Ms()const {
-		return data_ * 3600 * 1000 * 1000;
-	};
-private:
-	long data_;
-};
-
-class Minutes {
-public:
-	OPERATOR_HELPER(Minutes, data_);
-	long Ms()const {
-		return data_ * 60 * 1000 * 1000;
-	};
-private:
-	long data_;
-};
-
-class Seconds {
-public:
-	OPERATOR_HELPER(Seconds, data_);
-	long Ms()const {
-		return data_ * 1000 * 1000;
-	};
-private:
-	long data_;
-};
-
-class MilliSeconds {
-public:
-	OPERATOR_HELPER(MilliSeconds, data_);
-	long Ms()const {
-		return data_ * 1000;
-	};
-private:
-	long data_;
-};
-
-class MicroSeconds {
-public:
-	OPERATOR_HELPER(MicroSeconds, data_);
-	long Ms()const {
-		return data_ ;
-	};
-private:
-	long data_;
-};
-
-
-
 class TimeDuration {
 public:
 	long Ms()const {
 		return data_ ;
 	};
-	TimeDuration(const Hours& h): data_(h.Ms()) {};
-	TimeDuration(const Minutes& h): data_(h.Ms()) {};
-	TimeDuration(const Seconds& h): data_(h.Ms()) {};
-	TimeDuration(const MilliSeconds& h): data_(h.Ms()) {};
-	TimeDuration(const MicroSeconds& h): data_(h.Ms()) {};
 
 	OPERATOR_HELPER(TimeDuration, data_);
+#undef OPERATOR_HELPER
 private:
 	long data_;
 };
 
-#undef OPERATOR_HELPER
+inline TimeDuration Hours(int value) {
+	return TimeDuration(value * 3600 * 1000 * 1000);
+};
+
+inline TimeDuration Minutes(int value) {
+	return TimeDuration(value * 60 * 1000 * 1000);
+};
+
+inline TimeDuration Seconds(int value) {
+	return TimeDuration(value * 1000 * 1000);
+};
+
+inline TimeDuration MilliSeconds(int value) {
+	return TimeDuration(value * 1000);
+};
+
+inline TimeDuration MicroSeconds(int value) {
+	return TimeDuration(value);
+};
+
+
 
 class Time {
+	static const int64_t kMicroSecondsPerSecond = 1000 * 1000;
 public:
+	Time() {
+		data_.tv_sec = 0;
+		data_.tv_usec = 0;
+	};
+	explicit Time(const struct timeval& time) {
+		data_ = time;
+	};
 
+	long Ms() const {
+		int64_t msenonds = (  data_.tv_sec ) * kMicroSecondsPerSecond + data_.tv_usec ;
+		return msenonds;
+	}
+
+	std::string ToString()const;
 private:
+	struct timeval data_;
 
 };
+
+inline TimeDuration operator-(const Time& left, const Time& right) {
+	return TimeDuration();
+};
+
+TimeDuration AbsTimeDuration(const Time& left, const Time& right);
+
+TimeDuration operator+(const Time& time, const TimeDuration& r);
+TimeDuration operator-(const Time& time, const TimeDuration& r);
+
+class Clock {
+public:
+	static const int64_t kMicroSecondsPerSecond = 1000 * 1000;
+	static Date ToDay();
+	static Time Now();
+};
+
+template<int local>
+class CityClock {
+public:
+	static const int64_t kMicroSecondsPerSecond = 1000 * 1000;
+	static Date ToDay() {
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		int64_t msenonds = (  local * 60 * 60 + tv.tv_sec ) * kMicroSecondsPerSecond + tv.tv_usec ;
+
+		time_t seconds = static_cast<time_t>(msenonds / kMicroSecondsPerSecond);
+		struct tm tm_time;
+		gmtime_r(&seconds, &tm_time);
+
+		return Date(tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday);
+	};
+
+	static Time Now() {
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		tv.tv_sec += local * 3600;
+		return Time(tv);
+	};
+};
+
+typedef CityClock<8> LocalClock;
 
 }
 

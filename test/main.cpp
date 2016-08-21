@@ -20,6 +20,10 @@ int main() {
 
 	assert(service.IsInLoop());
 
+
+	LOG_INFO << "test time " << LocalClock::Now().ToString() ;
+	LOG_INFO << "test time " << LocalClock::ToDay().ToString() ;
+
 	struct sockaddr_in addr;
 	socketops::fromIpPort("127.0.0.1", 8060, &addr);
 	Accepter accepter(&service, addr, false);

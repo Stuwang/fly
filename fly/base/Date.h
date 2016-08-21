@@ -41,6 +41,9 @@ private:
 	int data_;
 };
 
+
+
+
 #define OPERATOR_HELPER(type,data)						\
 type(long value):data_(value){}							\
 type operator+(const type& right) {						\
@@ -72,48 +75,10 @@ type &operator/=(int right) {							\
 	return *this;										\
 };
 
-
-class Days {
-public:
-	Days(): data_(0) {};
-	OPERATOR_HELPER(Days, data_)
-
-	long days()const {
-		return data_;
-	};
-private:
-	int data_;
-};
-
-class Weeks {
-public:
-	Weeks(): data_(0) {};
-	long days()const {
-		return 7 * data_;
-	};
-	OPERATOR_HELPER(Weeks, data_);
-private:
-	int data_;
-};
-
-class Months {
-public:
-	Months(): data_(0) {};
-	OPERATOR_HELPER(Months, data_)
-	long days()const {
-		return 30 * data_;
-	};
-private:
-	int data_;
-};
-
 class DateDuration {
 public:
 	DateDuration(): data_(0) {};
 	explicit DateDuration(int value): data_(value) {};
-	DateDuration(Months m): data_(m.days()) {};
-	DateDuration(Days d): data_(d.days()) {};
-	DateDuration(Weeks w): data_(w.days()) {};
 
 	long days()const {
 		return data_ > 0 ? data_ : -data_;
@@ -126,6 +91,22 @@ private:
 };
 
 #undef OPERATOR_HELPER
+
+inline DateDuration Days(int value) {
+	return DateDuration(value);
+};
+
+inline DateDuration Weeks(int value) {
+	return DateDuration(value * 7);
+};
+
+inline DateDuration Months(int value) {
+	return DateDuration(value * 30);
+};
+
+inline DateDuration Years(int value) {
+	return DateDuration(value * 365);
+};
 
 
 class Date {
@@ -200,10 +181,8 @@ private:
 		{};
 	};
 
-	static constexpr inner_type MonthDays[] =
-	{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	static constexpr inner_type LeapMonthDays[] =
-	{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	static const inner_type MonthDays[] ;
+	static const inner_type LeapMonthDays[];
 
 	DataImpl data_;
 };

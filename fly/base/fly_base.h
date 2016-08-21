@@ -15,5 +15,7 @@
 #include <base/StringView.h>
 #include <base/Thread.h>
 #include <base/Types.h>
+#include <base/Date.h>
+#include <base/Time.h>
 
 #endif

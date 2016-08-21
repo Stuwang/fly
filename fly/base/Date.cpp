@@ -60,7 +60,7 @@ Date Date::end_of_month()const {
 
 std::string Date::ToString()const {
 	char buf[64];
-	snprintf(buf, sizeof(buf), "%4d-%2d-%2d", data_.year, data_.month, data_.day);
+	snprintf(buf, sizeof(buf), "%4d-%02d-%02d", data_.year, data_.month, data_.day);
 	return std::string(buf);
 };
 
@@ -71,6 +71,11 @@ bool Date::IsLeap(int year) {
 	}
 	return false;
 };
+
+const inner_type Date::MonthDays[] =
+{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const inner_type Date::LeapMonthDays[] =
+{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 // DateDuration operator-(const Date& left, const Date& right) {
 
