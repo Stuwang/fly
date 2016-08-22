@@ -6,6 +6,7 @@
 
 #include <base/Types.h>
 #include <base/Mutex.h>
+#include <base/Time.h>
 
 #include <errno.h>
 #include <pthread.h>
@@ -30,8 +31,8 @@ public:
 		pthread_cond_wait(&cond_, m.getMutex()->getRowMutex());
 	};
 
-	bool Wait(UniqueLock& m, double waittime);
-	bool Wait(LockGuard& m, double waittime);
+	bool Wait(UniqueLock& m, const TimeDuration& waittime);
+	bool Wait(LockGuard& m, const TimeDuration& waittime);
 
 	void Notify() {
 		pthread_cond_signal(&cond_);
@@ -46,6 +47,8 @@ private:
 	friend class Mutex;
 	friend class UniqueLock;
 	friend class LockGuard;
+	
+	static const long long kNanoSecondsPerSecond = 1e9;
 };
 
 }
