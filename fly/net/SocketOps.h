@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <sys/eventfd.h>
+#include <sys/timerfd.h>
 
 #include <base/Logger.h>
 
@@ -22,6 +23,7 @@ namespace fly {
 namespace socketops {
 
 int creatEventFd();
+int creatTimerFd();
 
 void setNoblockAndCloseOnExec(int socketfd);
 void setNoDelay(int socketfd, bool on);

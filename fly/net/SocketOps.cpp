@@ -16,6 +16,17 @@ int creatEventFd() {
 	return eventfd;
 };
 
+int creatTimerFd(){
+	int timerfd = ::timerfd_create(CLOCK_MONOTONIC,TFD_NONBLOCK | TFD_CLOEXEC);
+	if(timerfd < 0){
+		int err = socketops::getSocketError(errno);
+		LOG_FATAL << "get new timer fd error " 
+			<< err
+			<< " rrmsg " << strerror(err);
+	}
+	return timerfd;
+};
+
 void setNoblockAndCloseOnExec(int socket) {
 	int flag = ::fcntl(socket, F_GETFL, 0);
 	flag |= O_NONBLOCK;
