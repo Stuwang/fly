@@ -87,25 +87,75 @@ public:
 		data_ = time;
 	};
 
-	long Ms() const {
-		int64_t msenonds = (  data_.tv_sec ) * kMicroSecondsPerSecond + data_.tv_usec ;
-		return msenonds;
+	explicit Time(long time) {
+		data_.tv_sec = time / kMicroSecondsPerSecond;
+		data_.tv_usec = time % kMicroSecondsPerSecond;
 	}
 
+	inline long Ms() const {
+		int64_t msenonds = (  data_.tv_sec ) * kMicroSecondsPerSecond + data_.tv_usec ;
+		return msenonds;
+	};
+
 	std::string ToString()const;
+
+	friend bool operator==(const Time& left, const Time& right) {
+		return left.Ms() == right.Ms();
+	};
+
+	friend bool operator!=(const Time& left, const Time& right) {
+		return left.Ms() != right.Ms();
+	};
+
+	friend bool operator>(const Time& left, const Time& right) {
+		return left.Ms() > right.Ms();
+	};
+
+	friend bool operator>=(const Time& left, const Time& right) {
+		return left.Ms() >= right.Ms();
+	};
+
+	friend bool operator<(const Time& left, const Time& right) {
+		return left.Ms() < right.Ms();
+	};
+
+	friend bool operator<=(const Time& left, const Time& right) {
+		return left.Ms() <= right.Ms();
+	};
+
+	friend inline TimeDuration operator-(const Time& left, const Time& right) {
+		return TimeDuration(left.Ms() - right.Ms());
+	};
+
+
+	friend Time operator+(const Time& time, const TimeDuration& r) {
+		return Time(time.Ms() + r.Ms());
+	};
+	Time& operator+=(const TimeDuration& r) {
+		*this = Time(Ms() + r.Ms());
+		return *this;
+	};
+
+	friend Time operator-(const Time& time, const TimeDuration& r) {
+		return Time(time.Ms() - r.Ms());
+	};
+
+	Time& operator-=(const TimeDuration& r) {
+		*this = Time(Ms() - r.Ms());
+		return *this;
+	}
 private:
+
 	struct timeval data_;
 
 };
 
-inline TimeDuration operator-(const Time& left, const Time& right) {
-	return TimeDuration();
+
+
+inline TimeDuration AbsTimeDuration(const Time& left, const Time& right) {
+	return left > right ? (left - right ) : (right - left );
 };
 
-TimeDuration AbsTimeDuration(const Time& left, const Time& right);
-
-TimeDuration operator+(const Time& time, const TimeDuration& r);
-TimeDuration operator-(const Time& time, const TimeDuration& r);
 
 class Clock {
 public:
@@ -138,7 +188,9 @@ public:
 	};
 };
 
-typedef CityClock<8> LocalClock;
+static const int BEIJING = +8;
+
+typedef CityClock<BEIJING> LocalClock;
 
 }
 
