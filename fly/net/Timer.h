@@ -21,12 +21,14 @@ public:
 		: id_(GetNewId())
 		, first_time_(first)
 		, repeat_(false)
+		, nextTime_(LocalClock::Now() + first_time_)
 		, f_(f)
 	{};
 	Timer(const Functor& f, const TimeDuration& first, const TimeDuration& repeat): id_(GetNewId())
 		, first_time_(first)
 		, repeat_(true)
 		, repeat_time_(repeat)
+		, nextTime_(LocalClock::Now() + first_time_)
 		, f_(f)
 	{};
 
@@ -39,11 +41,15 @@ public:
 			f_();
 		}
 	};
+
+	Time GetNextTime()const {return nextTime_;};
+	void SetNextTime(const Time& time) {nextTime_ = time;};
 private:
 	int64_t id_;
 	TimeDuration first_time_;
 	bool repeat_;
 	TimeDuration repeat_time_;
+	Time nextTime_;
 	Functor f_;
 
 	static inline  int64_t GetNewId() {

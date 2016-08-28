@@ -1,38 +1,73 @@
-#include <TimerQueue.h>
+#include <net/TimerQueue.h>
 
 namespace fly {
 
 TimerQueue::TimerQueue(EventLoop* loop)
-	: fd_(socketops::creatTimerFd())
+	: loop_(loop)
+	, fd_(socketops::creatTimerFd())
 	, chann_(new Channel(fd_, loop->getPoller()))
+
 {
 	chann_->setReadCallBack(std::bind(&TimerQueue::handleRead, this));
 	chann_->enableRead();
 	first_time_ = LocalClock::Now() + Hours(24);
 };
 
-void TimerQueue::Add(const Timer* p) {
+TimerQueue::~TimerQueue() {
+	chann_->disableAll();
+	for (auto i : time_timers_) {
+		delete i.second;
+	}
+	time_timers_.clear();
+	id_timers_.clear();
+	delete chann_;
 
 };
 
-void TimerQueue::Delete(const uint64_t timerid) {
+void TimerQueue::Add(Timer* p) {
+	if (loop_->IsInLoop()) {
+		AddTimerInLoop(p);
+	} else {
+		loop_->queueInLoop(std::bind(&TimerQueue::AddTimerInLoop, this, p));
+	}
+};
 
+void TimerQueue::AddTimerInLoop(Timer* p) {
+	LockGuard lock(mutex_);
+	time_timers_[Key(p->GetNextTime(), p->Id())] = p;
+	id_timers_[p->Id()] = p;
+}
+
+void TimerQueue::Delete(const uint64_t timerid) {
+	LockGuard lock(mutex_);
+	auto i = id_timers_.find(timerid);
+	if (i == id_timers_.end()) {
+		return;
+	} else {
+		Timer *p = i->second;
+		time_timers_.erase(Key(p->GetNextTime(), p->Id()));
+		id_timers_.erase(i);
+	}
 };
 
 void TimerQueue::DoFunctors() {
 	auto now = LocalClock::Now();
 	auto i = time_timers_.begin();
-	std::map<Time, Timer*> repeats_;
-	while (i != time_timers_.end() && i->first <= now ) {
+	while (i != time_timers_.end() && i->first.first <= now ) {
 		i->second->Run();
 		if (i->second->repeat()) {
 			auto time = now + i->second->RepeatTime();
-			time_timers_[time] = i->second;
+			i->second->SetNextTime(time);
+			time_timers_[Key(time, i->second->Id())] = i->second;
+		} else {
+			auto id = i->second->Id();
+			id_timers_.erase(id);
+			delete i->second;
 		}
 		i++;
 	}
-	time_timers_.erase(time_timers_.begin(), i);
 
+	time_timers_.erase(time_timers_.begin(), i);
 };
 
 void TimerQueue::handleRead() {
@@ -41,14 +76,18 @@ void TimerQueue::handleRead() {
 	if (s != sizeof(uint64_t)) {
 
 	};
+	{
+		LockGuard lock(mutex_);
+		DoFunctors();
 
-	DoFunctors();
-
-	if (time_timers_.empty()) {
-		Close();
-	} else {
-		auto time = time_timers_.begin()->first - LocalClock::Now();
-		setTime(time);
+		if (time_timers_.empty()) {
+			Close();
+		} else {
+			if (first_time_ > time_timers_.begin()->first.first) {
+				auto time = time_timers_.begin()->first.first - LocalClock::Now();
+				setTime(time);
+			}
+		}
 	}
 }
 
@@ -74,6 +113,7 @@ void TimerQueue::Close() {
 
 	::timerfd_settime(fd_, 0, &data, NULL);
 };
+
 
 
 }

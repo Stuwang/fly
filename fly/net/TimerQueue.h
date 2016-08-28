@@ -6,6 +6,7 @@
 
 namespace fly {
 
+class EventLoop;
 
 // timer , not thread safe
 class TimerQueue : noncopyable {
@@ -15,7 +16,9 @@ public:
 
 	TimerQueue(EventLoop* loop);
 
-	void Add(const Timer* p);
+	~TimerQueue();
+
+	void Add(Timer* p);
 
 	void Delete(const uint64_t timerid);
 
@@ -24,16 +27,23 @@ public:
 	void handleRead();
 
 private:
+	void AddTimerInLoop(Timer* p);
 	void setTime(const TimeDuration& time);
 	void Close();
 
+
+	EventLoop* loop_;
 	int fd_;
 	Channel * chann_;
 
 	Time first_time_;
 
-	std::map<Time, Timer*> time_timers_;
+	typedef std::pair<Time, int64_t> Key;
+
+	std::map<Key, Timer*> time_timers_;
 	std::map<int64_t, Timer*> id_timers_;
+
+	Mutex mutex_;
 };
 
 }

@@ -5,6 +5,7 @@ namespace fly {
 EventLoop::EventLoop()
 	: poller_(GetNewPoller())
 	, weakup_chan_(socketops::creatEventFd(), poller_ )
+	, timerqueue_(new TimerQueue(this) )
 	, looping_ (false)
 	, quit_ (false)
 	, pid_(tid())
@@ -13,7 +14,10 @@ EventLoop::EventLoop()
 	weakup_chan_.enableRead();
 };
 
-EventLoop::~EventLoop() {};
+EventLoop::~EventLoop() {
+	delete poller_;
+	delete timerqueue_;
+};
 
 void EventLoop::Loop() {
 	looping_ = true;
@@ -90,6 +94,29 @@ void EventLoop::queueInLoop(const Functor& func) {
 	if (!IsInLoop() || IsCallFunctors_) {
 		WeakUp();
 	}
+};
+
+
+int64_t EventLoop::RunAt(const Time& t, const Functor& f) {
+	Timer *p = new Timer(f, t - LocalClock::Now());
+	timerqueue_->Add(p);
+	return p->Id();
+};
+
+int64_t EventLoop::RunAfter(const TimeDuration& t, const Functor& f) {
+	Timer *p = new Timer(f, t );
+	timerqueue_->Add(p);
+	return p->Id();
+};
+
+int64_t EventLoop::RunEvery(const TimeDuration& t, const Functor& f) {
+	Timer *p = new Timer(f, t, t);
+	timerqueue_->Add(p);
+	return p->Id();
+};
+
+void EventLoop::cancleTimer(int64_t id) {
+	timerqueue_->Delete(id);
 };
 
 };

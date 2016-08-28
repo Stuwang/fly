@@ -9,6 +9,7 @@
 #include <base/CurrentThread.h>
 #include <base/Types.h>
 
+#include <net/TimerQueue.h>
 #include <net/Channel.h>
 #include <net/Poller.h>
 #include <net/SocketOps.h>
@@ -16,6 +17,8 @@
 namespace fly {
 
 typedef std::function<void()> Functor;
+
+class TimerQueue;
 
 class EventLoop : noncopyable {
 public:
@@ -34,10 +37,17 @@ public:
 
 	void runInLoop(const Functor& fun);
 	void queueInLoop(const Functor& fun);
+
+	int64_t RunAt(const Time& t, const Functor& f);
+	int64_t RunAfter(const TimeDuration& t, const Functor& f);
+	int64_t RunEvery(const TimeDuration& t, const Functor& f);
+	void cancleTimer(int64_t id);
 public:
 	Poller *poller_;
 	Channel weakup_chan_;
 	ChannelList chans_;
+
+	TimerQueue* timerqueue_;
 
 	bool looping_;
 	bool IsCallFunctors_;
