@@ -33,9 +33,10 @@ void TimerQueue::Add(Timer* p) {
 };
 
 void TimerQueue::AddTimerInLoop(Timer* p) {
-	LockGuard lock(mutex_);
 	time_timers_[Key(p->GetNextTime(), p->Id())] = p;
 	id_timers_[p->Id()] = p;
+	first_time_ = time_timers_.begin()->first.first;
+	setTime(first_time_ - LocalClock::Now());
 }
 
 void TimerQueue::Delete(const uint64_t timerid) {
@@ -56,6 +57,7 @@ void TimerQueue::DoFunctors() {
 	while (i != time_timers_.end() && i->first.first <= now ) {
 		i->second->Run();
 		if (i->second->repeat()) {
+			LOG_INFO << "repeat";
 			auto time = now + i->second->RepeatTime();
 			i->second->SetNextTime(time);
 			time_timers_[Key(time, i->second->Id())] = i->second;
@@ -64,10 +66,9 @@ void TimerQueue::DoFunctors() {
 			id_timers_.erase(id);
 			delete i->second;
 		}
-		i++;
+		time_timers_.erase(i);
+		i = time_timers_.begin();
 	}
-
-	time_timers_.erase(time_timers_.begin(), i);
 };
 
 void TimerQueue::handleRead() {
@@ -79,13 +80,16 @@ void TimerQueue::handleRead() {
 	{
 		LockGuard lock(mutex_);
 		DoFunctors();
-
+		LOG_INFO << time_timers_.size();
 		if (time_timers_.empty()) {
 			Close();
 		} else {
-			if (first_time_ > time_timers_.begin()->first.first) {
-				auto time = time_timers_.begin()->first.first - LocalClock::Now();
+			LOG_INFO << LocalClock::Now().ToString();
+			if (first_time_ < time_timers_.begin()->first.first) {
+				first_time_ = time_timers_.begin()->first.first;
+				auto time = first_time_ - LocalClock::Now();
 				setTime(time);
+				LOG_INFO << LocalClock::Now().ToString();
 			}
 		}
 	}

@@ -23,14 +23,16 @@ public:
 		, repeat_(false)
 		, nextTime_(LocalClock::Now() + first_time_)
 		, f_(f)
-	{};
+	{
+	};
 	Timer(const Functor& f, const TimeDuration& first, const TimeDuration& repeat): id_(GetNewId())
 		, first_time_(first)
 		, repeat_(true)
 		, repeat_time_(repeat)
 		, nextTime_(LocalClock::Now() + first_time_)
 		, f_(f)
-	{};
+	{
+	};
 
 	bool repeat() const {return repeat_;};
 	TimeDuration FirstTime() const {return first_time_;};

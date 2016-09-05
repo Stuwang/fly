@@ -14,12 +14,16 @@ std::string& LogBuf() {
 
 void defaultOutput(const char* msg, int len)
 {
-	auto &buf = LogBuf();
-	// if (buf.size() >= 8 * 1024) {
-	buf.append(msg, len);
-	size_t n = fwrite(buf.data(), 1, buf.size(), stdout);
+
+	size_t n = fwrite(msg, 1, len, stdout);
 	(void)n;
-	std::string().swap(buf);
+
+	// auto &buf = LogBuf();
+	// // if (buf.size() >= 8 * 1024) {
+	// buf.append(msg, len);
+	// size_t n = fwrite(buf.data(), 1, buf.size(), stdout);
+	// (void)n;
+	// std::string().swap(buf);
 	// } else {
 	// 	buf.append(msg, len);
 	// }

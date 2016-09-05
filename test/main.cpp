@@ -12,7 +12,7 @@ std::vector<TcpConPtr> &Conns() {
 	return conns_;
 };
 
-int main() {
+void test_net() {
 	signal_init<> _signal_init_;
 	ThreadInit _init;
 
@@ -59,5 +59,22 @@ int main() {
 	});
 	LOG_INFO << fmt("%p", (void*)&service);
 	accepter.listen();
+	service.Loop();
+};
+
+void test_timer() {
+
+}
+
+int main() {
+	signal_init<> _signal_init_;
+	ThreadInit _init;
+
+	EventLoop service;
+
+	service.RunAt(LocalClock::Now()+Seconds(2),[](){
+		std::cout << "..." << std::endl;
+	});
+
 	service.Loop();
 };
