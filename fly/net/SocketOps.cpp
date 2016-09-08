@@ -229,6 +229,14 @@ void fromIpPort(const char* ip, uint16_t port, struct sockaddr_in * addr) {
 	}
 };
 
+struct sockaddr_in fromPort(uint16_t port){
+	struct sockaddr_in addr;
+	bzero(&addr,sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	return addr;	
+};
+
 struct sockaddr_in fromIpPort(const char* ip, uint16_t port) {
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;

@@ -24,8 +24,7 @@ void test_net() {
 	LOG_INFO << "test time " << LocalClock::Now().ToString() ;
 	LOG_INFO << "test time " << LocalClock::ToDay().ToString() ;
 
-	struct sockaddr_in addr;
-	socketops::fromIpPort("127.0.0.1", 8060, &addr);
+	struct sockaddr_in addr = socketops::fromPort(8060);
 	Accepter accepter(&service, addr, false);
 	accepter.setNewConnectionCallBack([&service](int sockfd,
 	const struct sockaddr_in & a) {
@@ -63,10 +62,6 @@ void test_net() {
 };
 
 void test_timer() {
-
-}
-
-int main() {
 	signal_init<> _signal_init_;
 	ThreadInit _init;
 
@@ -77,4 +72,8 @@ int main() {
 	});
 
 	service.Loop();
+}
+
+int main() {
+	test_net() ;
 };
