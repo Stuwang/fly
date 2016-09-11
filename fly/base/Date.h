@@ -137,9 +137,9 @@ public:
 
 #define DATE_COMPARE(op)\
 return data_.year < right.data_.year ||\
-data_.year == right.data_.year && data_.month < right.data_.month ||\
-data_.year == right.data_.year && data_.month == right.data_.month \
-&& data_.day < right.data_.day;
+(data_.year == right.data_.year && data_.month < right.data_.month) ||\
+(data_.year == right.data_.year && data_.month == right.data_.month \
+&& data_.day < right.data_.day);
 
 	bool operator> (const Date& right)const {
 		DATE_COMPARE( < );

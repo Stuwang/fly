@@ -2,7 +2,7 @@
 
 namespace fly {
 
-bool Condition::Wait(UniqueLock& m, const TimeDuration& waittime){
+bool Condition::TimeWait(UniqueLock& m, const TimeDuration& waittime){
 	struct timespec abstime;
 	clock_gettime(CLOCK_REALTIME, &abstime);
 
@@ -15,7 +15,7 @@ bool Condition::Wait(UniqueLock& m, const TimeDuration& waittime){
 
 };
 
-bool Condition::Wait(LockGuard& m, const TimeDuration& waittime){
+bool Condition::TimeWait(LockGuard& m, const TimeDuration& waittime){
 	struct timespec abstime;
 	clock_gettime(CLOCK_REALTIME, &abstime);
 

@@ -29,7 +29,7 @@ public:
 	};
 	size_t append(const char*data, int len) {
 		int w = 0;
-		if (size_ - cur_ > len) {
+		if (size_ - cur_ > static_cast<size_t>(len) ) {
 			w = len;
 		} else {
 			w = size_ - cur_;

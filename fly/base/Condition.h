@@ -31,8 +31,8 @@ public:
 		pthread_cond_wait(&cond_, m.getMutex()->getRowMutex());
 	};
 
-	bool Wait(UniqueLock& m, const TimeDuration& waittime);
-	bool Wait(LockGuard& m, const TimeDuration& waittime);
+	bool TimeWait(UniqueLock& m, const TimeDuration& waittime);
+	bool TimeWait(LockGuard& m, const TimeDuration& waittime);
 
 	void Notify() {
 		pthread_cond_signal(&cond_);

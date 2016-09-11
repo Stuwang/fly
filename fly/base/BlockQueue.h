@@ -21,7 +21,7 @@ public:
 	T get(){
 		LockGuard lock(mutex_);
 		while(data_.empty()){
-			cond_.Wait(mutex_);
+			cond_.Wait(lock);
 		}
 		T ret(data_.front());
 		data_.pop_front();
