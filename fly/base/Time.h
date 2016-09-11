@@ -12,7 +12,7 @@ namespace fly {
 
 #define OPERATOR_HELPER(type,data)						\
 type():data_(0){};										\
-type(long value):data_(value){}							\
+explicit type(long value):data_(value){}				\
 type operator+(const type& right)const {				\
 		return type(data_ + right.data_);				\
 };														\

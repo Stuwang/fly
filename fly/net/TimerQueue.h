@@ -14,7 +14,7 @@ public:
 
 	typedef std::function<void()> Functor;
 
-	TimerQueue(EventLoop* loop);
+	explicit TimerQueue(EventLoop* loop);
 
 	~TimerQueue();
 

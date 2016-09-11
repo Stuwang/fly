@@ -10,7 +10,7 @@ namespace fly {
 
 class DayOfWeek {
 public:
-	DayOfWeek(int value)
+	explicit DayOfWeek(int value)
 		: data_(value) {
 		if (value <= 0 || value > 7) {
 			LOG_ERROR << "week day error " ;

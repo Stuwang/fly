@@ -52,7 +52,7 @@ private:
 
 class LockGuard: noncopyable {
 public:
-	LockGuard(Mutex& mutex)
+	explicit LockGuard(Mutex& mutex)
 		: mutex_(mutex)
 	{
 		assert(!mutex_.isLocked());
@@ -74,7 +74,7 @@ struct DonnotLock_t {};
 
 class UniqueLock: noncopyable  {
 public:
-	UniqueLock(Mutex& mutex)
+	explicit UniqueLock(Mutex& mutex)
 		: mutex_(&mutex)
 	{
 		assert(!mutex_->isLocked());
