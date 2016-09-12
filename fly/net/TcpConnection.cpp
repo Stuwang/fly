@@ -22,12 +22,10 @@ TcpConnection::TcpConnection(EventLoop* loop,
 	socketops::setNoDelay(sockfd_, true);
 	socketops::setKeepAlive(sockfd_, true);
 
-
 };
 
 void TcpConnection::Start() {
 	startRead();
-
 	if (newCb_) newCb_(shared_from_this());
 };
 
