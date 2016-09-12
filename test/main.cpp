@@ -34,7 +34,10 @@ std::vector<TcpConPtr> &Conns() {
 };
 
 void test_net() {
-	signal_init<> _signal_init_;
+	// Signal_ignore<SIGPIPE> __;
+	Signal::signal(SIGPIPE,[](){
+		LOG_INFO << "SIGPIPE OCCR";
+			});
 	ThreadInit _init;
 
 	EventLoop service;
@@ -80,16 +83,16 @@ void test_net() {
 	LOG_INFO << fmt("%p", (void*)&service);
 	accepter.listen();
 
-	Singnal<SIGINT> _([&]() {
+	Signal::signal(SIGINT,[&](){
 		service.quit();
-	});
+			});
 
 	service.Loop();
 
 };
 
 void test_timer() {
-	signal_init<> _signal_init_;
+	//signal_init<> _signal_init_;
 	ThreadInit _init;
 
 	EventLoop service;

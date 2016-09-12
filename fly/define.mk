@@ -14,7 +14,7 @@ INCLUDE_FLAG=-I${INCLUDE} -I.
 # LD_FLAG=-pthread -dl
 
 %.o:%.cpp
-	${CCX} ${CXX_FLAG} ${INCLUDE_FLAG} ${LD_FLAG}  $^ -c -o $@
+	${CCX} ${CXX_FLAG} ${INCLUDE_FLAG} $^ -c -o $@
 
 # function 
 
