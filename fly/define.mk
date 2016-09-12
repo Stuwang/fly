@@ -2,15 +2,16 @@ AR=ar
 
 AR_FLAG=rcs
 
-CCX=clang++
+# CCX=clang++
+CCX=g++
 
 INCLUDE=${ROOTDIR}
 
-CXX_FLAG=-O2 -Werror -Wall -std=c++11
+CXX_FLAG=-O2 -g -Werror -Wall -std=c++11 -pg
 
 INCLUDE_FLAG=-I${INCLUDE} -I.
 
-# LD_FLAG=-lpthread -dl
+# LD_FLAG=-pthread -dl
 
 %.o:%.cpp
 	${CCX} ${CXX_FLAG} ${INCLUDE_FLAG} ${LD_FLAG}  $^ -c -o $@

@@ -7,7 +7,7 @@ SUBDIRS=`ls -d */`
 TARGET=main
 
 all:main.cpp
-	$(CCX) $(CXX_FLAG) main.cpp -lpthread -I../fly -lfly -L../fly/ -o ${TARGET}
+	$(CCX) $(CXX_FLAG) main.cpp -lrt -pthread -I../fly -lfly -L../fly/ -o ${TARGET}
 
 lib:
 	cd ../fly && make all  && make all

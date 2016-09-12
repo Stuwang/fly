@@ -7,6 +7,27 @@ using namespace std;
 using namespace fly;
 using namespace fly::socketops;
 
+template<int Sin>
+class Singnal {
+public:
+	typedef std::function<void()> Functor;
+	explicit Singnal(const Functor& f) {
+		LOG_INFO << "signal";
+		GetCallBack() = f;
+		::signal(Sin, &callback);
+	};
+
+	static void callback(int) {
+		LOG_INFO << "signal" << Sin; 
+		GetCallBack()();
+	};
+
+	static Functor& GetCallBack() {
+		static Functor f;
+		return f;
+	};
+};
+
 std::vector<TcpConPtr> &Conns() {
 	static std::vector<TcpConPtr> conns_;
 	return conns_;
@@ -58,7 +79,13 @@ void test_net() {
 	});
 	LOG_INFO << fmt("%p", (void*)&service);
 	accepter.listen();
+
+	Singnal<SIGINT> _([&]() {
+		service.quit();
+	});
+
 	service.Loop();
+
 };
 
 void test_timer() {
@@ -67,7 +94,7 @@ void test_timer() {
 
 	EventLoop service;
 
-	service.RunAt(LocalClock::Now()+Seconds(2),[](){
+	service.RunAt(LocalClock::Now() + Seconds(2), []() {
 		std::cout << "..." << std::endl;
 	});
 
