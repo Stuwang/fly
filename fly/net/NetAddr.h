@@ -31,6 +31,9 @@ const struct sockaddr_in* sockaddr_in_cast(const struct sockaddr* addr);
 
 class NetAddr {
 public:
+	NetAddr(){
+		bzero(&addr_,sizeof(addr_));
+	}
 	explicit NetAddr(uint16_t port);
 	NetAddr(StringView ip, uint16_t port);
 	// NetAddr(StringView ip_port);
@@ -41,6 +44,10 @@ public:
 	explicit NetAddr(const struct sockaddr& addr)
 		: addr_(*socketops::sockaddr_in_cast(&addr))
 	{};
+
+	void reset(){
+		bzero(&addr_,sizeof(addr_));
+	}
 
 	std::string Ip()const {
 		char buf[64] = {0};
@@ -65,7 +72,7 @@ public:
 	};
 
 	struct sockaddr* getSockAddr() {
-		return static_cast<struct sockaddr*>(&addr_);
+		return reinterpret_cast<struct sockaddr*>(&addr_);
 	};
 
 

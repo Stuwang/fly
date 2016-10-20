@@ -21,7 +21,7 @@ Connecter::Connecter(EventLoop* loop, const sockaddr& addr)
 
 };
 
-void Connecter::SetAddr(const sockaddr& addr) {
+void Connecter::SetAddr(const NetAddr& addr) {
 	assert(!IsConnecting());
 	addr_ = addr;
 };

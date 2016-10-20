@@ -22,6 +22,8 @@
 
 namespace fly {
 
+class NetAddr;
+
 namespace socketops {
 
 int creatEventFd();
@@ -39,7 +41,7 @@ int creatNoBlockOrDie();
 int connect(int socketfd, const NetAddr& addr);
 void bindOrDie(int socketfd, const NetAddr& addr);
 void listenOrDie(int socketfd);
-int accept(int socketfd, const NetAddr& addr);
+int accept(int socketfd, NetAddr* addr);
 
 ssize_t read(int sockfd, void *buf, size_t cout);
 ssize_t readv(int sockfd, const struct iovec *iov, int iovcnt);

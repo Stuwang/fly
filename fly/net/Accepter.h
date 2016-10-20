@@ -11,7 +11,7 @@
 
 namespace fly {
 
-typedef std::function<void(int sockfd, const struct sockaddr_in&)>
+typedef std::function<void(int sockfd, const NetAddr&)>
 NewConnetionCallBack;
 
 class Accepter : noncopyable {

@@ -15,7 +15,7 @@ Accepter::Accepter(EventLoop* loop,
 	int fd = chan_.getfd();
 	socketops::setReuseAddr(fd, true);
 	socketops::setReusePort(fd, reuseport);
-	socketops::bindOrDie(fd, socketops::sockaddr_cast(&addr));
+	socketops::bindOrDie(fd, addr);
 	chan_.setReadCallBack(std::bind(&Accepter::handleRead, this));
 
 };

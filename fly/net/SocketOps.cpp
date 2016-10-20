@@ -80,8 +80,8 @@ void bindOrDie(int socketfd, const NetAddr& addr) {
 	int ret = ::bind(socketfd, addr.getSockAddr(), sizeof(struct sockaddr_in));
 	if (ret < 0 ) {
 		int err = getSocketError(errno);
-		LOG_FATAL << "bind error , addr is " << toIpPort(addr)
-		          << " errno:" << err
+		LOG_FATAL << "bind error , addr is " <<  addr.IpPort()
+				  << " errno:" << err
 		          << " errmsg:" << strerror(err);
 	}
 };
