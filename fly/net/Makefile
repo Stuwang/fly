@@ -3,7 +3,7 @@ ROOTDIR=$(shell pwd)/..
 
 include ../define.mk
 
-OBJ=SocketOps.o Poller.o Channel.o EventLoop.o Accepter.o TcpConnection.o help.o Timer.o TimerQueue.o Connecter.o
+OBJ=SocketOps.o Poller.o Channel.o EventLoop.o Accepter.o TcpConnection.o help.o Timer.o TimerQueue.o Connecter.o NetAddr.o
 
 STATIC_LIB=libfly_net.a
 

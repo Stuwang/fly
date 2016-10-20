@@ -3,7 +3,7 @@
 namespace fly {
 
 NetAddr::NetAddr(uint16_t port) {
-	bzero(addr_, sizeof(addr_));
+	bzero(&addr_, sizeof(addr_));
 	addr_.sin_family = AF_INET;
 	addr_.sin_port = htons(port);
 };

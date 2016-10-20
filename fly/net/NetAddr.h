@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#include "StringView.h"
-#include "SocketOps.h"
+#include "base/StringView.h"
+#include "net/SocketOps.h"
 
 
 namespace fly {
@@ -19,7 +19,7 @@ public:
 	{};
 
 	explicit NetAddr(const struct sockaddr& addr)
-		: addr_(*SocketOps::sockaddr_in_cast(&addr))
+		: addr_(*socketops::sockaddr_in_cast(&addr))
 	{};
 
 	std::string Ip()const {
@@ -37,8 +37,7 @@ public:
 	};
 
 	uint16_t Port()const {
-		const struct sockaddr_in* addr4 = sockaddr_in_cast(addr);
-		return sockets::networkToHost16(addr4->sin_port);
+		return ntohs(addr_.sin_port);
 	};
 
 	const struct sockaddr* getSockAddr()const {
@@ -47,7 +46,7 @@ public:
 
 private:
 	struct sockaddr_in addr_;
-}
+};
 
 }
 
