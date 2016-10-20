@@ -79,7 +79,9 @@ void TcpConnection::startRead() {
 	if (loop_->IsInLoop()) {
 		SetReadInLoop(true);
 	} else {
-		loop_->queueInLoop(std::bind(&TcpConnection::SetReadInLoop, this, true));
+		loop_->queueInLoop(
+		    std::bind(&TcpConnection::SetReadInLoop,
+		              shared_from_this(), true));
 	}
 };
 
@@ -87,13 +89,14 @@ void TcpConnection::stopRead() {
 	if (loop_->IsInLoop()) {
 		SetReadInLoop(false);
 	} else {
-		loop_->queueInLoop(std::bind(&TcpConnection::SetReadInLoop, this, false));
+		loop_->queueInLoop(
+		    std::bind(&TcpConnection::SetReadInLoop,
+		              shared_from_this(), false));
 	}
 };
 
 bool TcpConnection::isReading()const {
-	chan_ -> isReading();
-	return true;
+	return chan_ -> isReading();
 };
 
 void  TcpConnection::SetReadInLoop(bool on) {
@@ -108,7 +111,8 @@ void TcpConnection::startListenWrite() {
 	if (loop_->IsInLoop()) {
 		SetWriteInLoop(true);
 	} else {
-		loop_->queueInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, true));
+		loop_->queueInLoop(std::bind(&TcpConnection::SetWriteInLoop,
+		                             shared_from_this(), true));
 	}
 };
 
@@ -116,7 +120,8 @@ void TcpConnection::endListenWrite() {
 	if (loop_->IsInLoop()) {
 		SetWriteInLoop(false);
 	} else {
-		loop_->queueInLoop(std::bind(&TcpConnection::SetWriteInLoop, this, false));
+		loop_->queueInLoop(std::bind(&TcpConnection::SetWriteInLoop,
+		                             shared_from_this(), false));
 	}
 };
 
@@ -160,7 +165,8 @@ void TcpConnection::SendInLoop(const void* data, size_t len) {
 		}
 		int Error = errno;
 		if ( Error == EAGAIN || Error == EWOULDBLOCK) {
-			outputBuffer_.append(static_cast<const char*>(data) + size, len - size);
+			outputBuffer_.append(static_cast<const char*>(data) + size,
+			                     len - size);
 			startListenWrite();
 		}
 	}
