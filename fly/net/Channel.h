@@ -17,7 +17,7 @@ typedef std::function<void()> EventCallBack;
 class Channel : noncopyable {
 public:
 
-	Channel(int sockfd, Poller* poller);
+	Channel(Poller* poller, int sockfd);
 
 	~Channel();
 
@@ -77,13 +77,8 @@ public:
 	inline int events() {
 		return events_;
 	};
-
 	inline bool HasAdded() {
 		return addedEvents_;
-	}
-
-	inline void SetAdded(bool added) {
-		addedEvents_ = added;
 	}
 
 	void update();
@@ -93,12 +88,11 @@ public:
 	std::string EventToString(int event);
 
 private:
-	int events_;
-	int r_events_;
 	Poller * poller_;
 	int sockfd_;
-
 	bool addedEvents_;
+	int events_;
+	int r_events_;
 
 	EventCallBack readCallBack_;
 	EventCallBack writeCallBack_;

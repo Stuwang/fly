@@ -3,11 +3,11 @@
 namespace fly {
 
 Channel::Channel(int sockfd, Poller* poller)
-	: events_(0)
-	, r_events_(0)
-	, poller_(poller)
+	: poller_(poller)
 	, sockfd_(sockfd)
 	, addedEvents_(false)
+	, events_(0)
+	, r_events_(0)
 {
 
 };
@@ -20,17 +20,25 @@ Channel::~Channel() {
 };
 
 void Channel::update() {
-	poller_->updateChannel(this);
-	addedEvents_ = true;
+	if (addedEvents_) {
+		poller_->updateChannel(this);
+	} else {
+		poller_->addChannel(this);
+		addedEvents_ = true;
+	}
 };
 
 void Channel::remove() {
+	assert(!addedEvents_);
 	poller_->removeChannel(this);
 	addedEvents_ = false;
 };
 
 void Channel::handleEvents() {
-	LOG_INFO << "handle event " << sockfd_ << " events " << EventToString(r_events_);
+	LOG_INFO << "handle event "
+	         << sockfd_
+	         << " events "
+	         << EventToString(r_events_);
 
 	if ( (r_events_ & EPOLLRDHUP ) && (r_events_ & EPOLLIN) ) {
 		LOG_INFO << "handle close" ;
