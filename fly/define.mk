@@ -7,7 +7,7 @@ CCX=g++
 
 INCLUDE=${ROOTDIR}
 
-CXX_FLAG=-O2 -g -Werror -Wall -std=c++11 -pg
+CXX_FLAG=-O2 -g -Werror -Wall -std=c++11
 
 INCLUDE_FLAG=-I${INCLUDE} -I.
 
