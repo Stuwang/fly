@@ -11,12 +11,12 @@ typedef void (*FlushFunc)();
 
 class Logger : noncopyable {
 public:
-	static const int TRACE = 1;
-	static const int DEBUG = 2;
-	static const int INFO = 3;
-	static const int WARNING = 4;
-	static const int ERROR = 5;
-	static const int FATAL = 6;
+	static const int FLY_TRACE = 1;
+	static const int FLY_DEBUG = 2;
+	static const int FLY_INFO = 3;
+	static const int FLY_WARNING = 4;
+	static const int FLY_ERROR = 5;
+	static const int FLY_FATAL = 6;
 
 	static int defaultLevel;
 
@@ -52,7 +52,7 @@ public:
 		default:
 			assert(0);
 		}
-		return "UNKNOW";
+		return     "UNKNOW  ";
 	};
 
 	Logger(const char* file, int line, int level);
@@ -72,11 +72,11 @@ private:
 	static const int64_t kMicroSecondsPerSecond = 1000 * 1000;
 };
 
-#define LOG_TRACE fly::Logger(__FILE__,__LINE__,fly::Logger::TRACE).Stream()
-#define LOG_DEBUG fly::Logger(__FILE__,__LINE__,fly::Logger::DEBUG).Stream()
-#define LOG_INFO fly::Logger(__FILE__,__LINE__,fly::Logger::INFO).Stream()
-#define LOG_ERROR fly::Logger(__FILE__,__LINE__,fly::Logger::ERROR).Stream()
-#define LOG_FATAL fly::Logger(__FILE__,__LINE__,fly::Logger::FATAL).Stream()
+#define LOG_TRACE fly::Logger(__FILE__,__LINE__,fly::Logger::FLY_TRACE).Stream()
+#define LOG_DEBUG fly::Logger(__FILE__,__LINE__,fly::Logger::FLY_DEBUG).Stream()
+#define LOG_INFO fly::Logger(__FILE__,__LINE__,fly::Logger::FLY_INFO).Stream()
+#define LOG_ERROR fly::Logger(__FILE__,__LINE__,fly::Logger::FLY_ERROR).Stream()
+#define LOG_FATAL fly::Logger(__FILE__,__LINE__,fly::Logger::FLY_FATAL).Stream()
 
 }
 
