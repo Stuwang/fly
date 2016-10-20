@@ -64,7 +64,7 @@ Logger::~Logger() {
 
 	g_output(buf.data(), buf.length());
 
-	if (level_ == FATAL) {
+	if (level_ == FLY_FATAL) {
 		g_flush();
 		abort();
 	}
