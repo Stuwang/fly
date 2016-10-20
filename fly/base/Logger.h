@@ -37,17 +37,17 @@ public:
 
 	static const char* LogLevelName(int level) {
 		switch (level) {
-		case TRACE:
+		case FLY_TRACE:
 			return "TRACE   ";
-		case DEBUG:
+		case FLY_DEBUG:
 			return "DEBUG   ";
-		case INFO:
+		case FLY_INFO:
 			return "INFO    ";
-		case WARNING:
+		case FLY_WARNING:
 			return "WARNING ";
-		case ERROR:
+		case FLY_ERROR:
 			return "ERROR   ";
-		case FATAL:
+		case FLY_FATAL:
 			return "FATAL   ";
 		default:
 			assert(0);
