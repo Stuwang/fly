@@ -28,8 +28,8 @@ public:
 
 	EventLoop *getEventLoop();
 	const std::string & name() const;
-	const struct sockaddr_in& localAddress() const ;
-	const struct sockaddr_in& peerAddress() const ;
+	const NetAddr localAddress() const ;
+	const NetAddr peerAddress() const ;
 
 	void newCallBack(const CallBack& cb) {newCb_ = cb;};
 	void ReadCallBack(const CallBack& cb) {readCb_ = cb;};
@@ -81,8 +81,8 @@ private:
 
 	Buffer inputBuffer_;
 	Buffer outputBuffer_;
-	struct sockaddr_in localAddr_;
-	struct sockaddr_in peerAddr_;
+	NetAddr localAddr_;
+	NetAddr peerAddr_;
 
 	static const size_t DefaultHighWater_ = 64 * 1024;
 	size_t HighWater_;

@@ -17,7 +17,7 @@ NewConnetionCallBack;
 class Accepter : noncopyable {
 public:
 	Accepter(EventLoop* loop,
-	         const struct sockaddr_in&, bool reuseport);
+	         const NetAddr&, bool reuseport);
 
 	~Accepter();
 
@@ -35,7 +35,7 @@ private:
 	void handleRead();
 
 	EventLoop *loop_;
-	struct sockaddr addr_;
+	NetAddr addr_;
 	Channel chan_;
 	NewConnetionCallBack callback_;
 	bool listening_;

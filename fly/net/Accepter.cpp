@@ -5,9 +5,9 @@ namespace fly {
 using namespace socketops;
 
 Accepter::Accepter(EventLoop* loop,
-                   const struct sockaddr_in& addr, bool reuseport)
+                   const NetAddr& addr, bool reuseport)
 	: loop_(loop)
-	, addr_(*sockaddr_cast(&addr))
+	, addr_(addr)
 	, chan_(socketops::creatNoBlockOrDie(), loop_->getPoller() )
 	, listening_(false)
 	, idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
@@ -32,11 +32,11 @@ void Accepter::listen() {
 	listening_ = true;
 	chan_.enableRead();
 	LOG_INFO << "listens start,local address:"
-	         << socketops::toIpPort(&addr_);
+	         << addr_.IpPort();
 };
 
 void Accepter::handleRead() {
-	struct sockaddr_in addr;
+	NetAddr addr;
 	int connfd = socketops::accept(chan_.getfd(), &addr);
 	if (connfd > 0) {
 		if (callback_) {
@@ -44,7 +44,7 @@ void Accepter::handleRead() {
 		} else {
 			socketops::close(connfd);
 			LOG_INFO << "New Connection , But no callback , close ,addr is"
-			         << socketops::toIpPort(sockaddr_cast(&addr));
+			         << addr_.IpPort();
 		}
 	} else {
 		if (errno == EMFILE) {
@@ -53,7 +53,7 @@ void Accepter::handleRead() {
 			::close(idleFd_);
 			::open("/dev/null", O_RDONLY | O_CLOEXEC);
 			LOG_INFO << "New Connection , But no socket descriper can use"
-			         << socketops::toIpPort(sockaddr_cast(&addr));
+			         << addr_.IpPort();
 		}
 	}
 };

@@ -41,11 +41,11 @@ const std::string & TcpConnection::name() const {
 	return name_;
 };
 
-const struct sockaddr_in& TcpConnection::localAddress() const {
+const NetAddr  TcpConnection::localAddress() const {
 	return localAddr_;
 };
 
-const struct sockaddr_in& TcpConnection::peerAddress() const {
+const NetAddr  TcpConnection::peerAddress() const {
 	return peerAddr_;
 };
 
