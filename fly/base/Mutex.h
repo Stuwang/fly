@@ -3,6 +3,8 @@
 
 #include "Config.h"
 
+#include <assert.h>
+
 #include <base/Types.h>
 
 #include <pthread.h>

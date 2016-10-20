@@ -32,10 +32,10 @@ public:
 class Defer {
 public:
 	explicit Defer(const std::function<void()>& fun)
-		: f_(fun) {};
+		: f_(fun) {}
 
 	void cancle() {
-		f_.reset();
+		
 	}
 
 	~Defer() {
@@ -43,7 +43,7 @@ public:
 	}
 private:
 	std::function<void()> f_;
-}
+};
 
 
 
