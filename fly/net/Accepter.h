@@ -11,25 +11,31 @@
 
 namespace fly {
 
-typedef std::function<void(int sockfd, const struct sockaddr_in&)> NewConnetionCallBack;
+typedef std::function<void(int sockfd, const struct sockaddr_in&)>
+NewConnetionCallBack;
 
 class Accepter : noncopyable {
 public:
-	Accepter(EventLoop* loop, const struct sockaddr_in&, bool reuseport);
+	Accepter(EventLoop* loop,
+	         const struct sockaddr_in&, bool reuseport);
+
 	~Accepter();
-	bool isListening() {
+
+	bool isListening() const {
 		return listening_;
 	}
+
 	void listen();
 
 	void setNewConnectionCallBack(const NewConnetionCallBack& callback) {
 		callback_ = callback;
 	};
+	
 private:
 	void handleRead();
 
-	struct sockaddr addr_;
 	EventLoop *loop_;
+	struct sockaddr addr_;
 	Channel chan_;
 	NewConnetionCallBack callback_;
 	bool listening_;

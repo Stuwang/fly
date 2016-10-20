@@ -4,10 +4,11 @@ namespace fly {
 
 using namespace socketops;
 
-Accepter::Accepter(EventLoop* loop, const struct sockaddr_in& addr, bool reuseport)
-	: addr_(*sockaddr_cast(&addr))
-	, loop_(loop)
-	, chan_(socketops::creatNoBlockOrDie(), loop_->getPoller	() )
+Accepter::Accepter(EventLoop* loop,
+                   const struct sockaddr_in& addr, bool reuseport)
+	: loop_(loop)
+	, addr_(*sockaddr_cast(&addr))
+	, chan_(socketops::creatNoBlockOrDie(), loop_->getPoller() )
 	, listening_(false)
 	, idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
