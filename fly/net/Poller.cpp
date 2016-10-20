@@ -38,7 +38,7 @@ void Poller::fillChanS(int num, ChannelList *chs) const {
 	}
 };
 
-void addChannel(Channel* chan) {
+void Poller::addChannel(Channel* chan) {
 	assert(!hasChannel(chan));
 	int fd = chan->getfd();
 	channels_[fd] = chan;
@@ -47,7 +47,6 @@ void addChannel(Channel* chan) {
 
 void Poller::updateChannel(Channel* chan) {
 	assert(hasChannel(chan));
-	int fd = chan->getfd();
 	update(EPOLL_CTL_MOD, chan);
 };
 

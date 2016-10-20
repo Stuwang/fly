@@ -9,7 +9,7 @@ TcpConnection::TcpConnection(EventLoop* loop,
 	, name_(name)
 {
 	poller_ = loop->getPoller();
-	chan_.reset(new Channel(sockfd_, poller_) );
+	chan_.reset(new Channel(poller_,sockfd_) );
 	localAddr_ = socketops::getLocalAddr(sockfd_);
 	peerAddr_ = socketops::getPeerAddr(sockfd_);
 

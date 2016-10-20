@@ -46,7 +46,7 @@ void Connecter::Start() {
 	connecting_ = true;
 	fd_ = socketops::creatNoBlockOrDie();
 	socketops::connect(fd_, addr_);
-	chan_.reset(new Channel(fd_, loop_->getPoller()));
+	chan_.reset(new Channel(loop_->getPoller(),fd_));
 	chan_->setWriteCallBack(std::bind(&Connecter::HandleWrite,
 	                                  shared_from_this()));
 	chan_->setErrorCallBack(std::bind(&Connecter::HandleError,

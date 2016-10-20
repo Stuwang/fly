@@ -8,7 +8,7 @@ Accepter::Accepter(EventLoop* loop,
                    const NetAddr& addr, bool reuseport)
 	: loop_(loop)
 	, addr_(addr)
-	, chan_(socketops::creatNoBlockOrDie(), loop_->getPoller() )
+	, chan_(loop_->getPoller(),socketops::creatNoBlockOrDie())
 	, listening_(false)
 	, idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {

@@ -2,7 +2,7 @@
 
 namespace fly {
 
-Channel::Channel(int sockfd, Poller* poller)
+Channel::Channel(Poller *poller,int sockfd)
 	: poller_(poller)
 	, sockfd_(sockfd)
 	, addedEvents_(false)
