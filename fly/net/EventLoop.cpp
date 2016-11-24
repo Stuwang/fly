@@ -4,7 +4,7 @@ namespace fly {
 
 EventLoop::EventLoop()
 	: poller_(GetNewPoller())
-	, weakup_chan_(socketops::creatEventFd(), poller_ )
+	, weakup_chan_(poller_,socketops::creatEventFd())
 	, timerqueue_(new TimerQueue(this) )
 	, looping_ (false)
 	, quit_ (false)

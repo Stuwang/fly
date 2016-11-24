@@ -5,7 +5,7 @@ namespace fly {
 TimerQueue::TimerQueue(EventLoop* loop)
 	: loop_(loop)
 	, fd_(socketops::creatTimerFd())
-	, chann_(new Channel(fd_, loop->getPoller()))
+	, chann_(new Channel(loop->getPoller(),fd_))
 
 {
 	chann_->setReadCallBack(std::bind(&TimerQueue::handleRead, this));

@@ -13,7 +13,7 @@ public:
 
 	explicit Connecter(EventLoop* loop);
 	Connecter(EventLoop* loop, const sockaddr& addr);
-	void SetAddr(const sockaddr& addr);
+	void SetAddr(const NetAddr& addr);
 	void Reset();
 	bool IsConnecting()const {return connecting_;};
 	void SetConnectedCallBack(const Functor& f);
@@ -25,7 +25,7 @@ private:
 	void HandleError();
 
 	EventLoop *loop_;
-	sockaddr addr_;
+	NetAddr addr_;
 	bool seted_addr_;
 	bool connecting_;
 	int fd_;

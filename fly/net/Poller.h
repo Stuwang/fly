@@ -24,6 +24,7 @@ public:
 	~Poller();
 	int poll(int timeout, ChannelList *chans);
 
+	void addChannel(Channel* chan);
 	void updateChannel(Channel* chan);
 	void removeChannel(Channel* chan);
 	bool hasChannel(Channel* chan);

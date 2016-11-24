@@ -21,14 +21,14 @@ Connecter::Connecter(EventLoop* loop, const sockaddr& addr)
 
 };
 
-void Connecter::SetAddr(const sockaddr& addr) {
+void Connecter::SetAddr(const NetAddr& addr) {
 	assert(!IsConnecting());
 	addr_ = addr;
 };
 
 void Connecter::Reset() {
 	assert(!IsConnecting());
-	memset(&addr_, 0, sizeof(addr_));
+	addr_.reset();
 	seted_addr_ = false;
 	connecting_ = false;
 	fd_ = 0;
@@ -45,8 +45,8 @@ void Connecter::Start() {
 	assert(!chan_);
 	connecting_ = true;
 	fd_ = socketops::creatNoBlockOrDie();
-	socketops::connect(fd_, &addr_);
-	chan_.reset(new Channel(fd_, loop_->getPoller()));
+	socketops::connect(fd_, addr_);
+	chan_.reset(new Channel(loop_->getPoller(),fd_));
 	chan_->setWriteCallBack(std::bind(&Connecter::HandleWrite,
 	                                  shared_from_this()));
 	chan_->setErrorCallBack(std::bind(&Connecter::HandleError,

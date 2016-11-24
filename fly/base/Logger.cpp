@@ -41,7 +41,9 @@ void defaultFlush()
 }
 
 OutputFunc Logger::g_output = defaultOutput;
+
 FlushFunc Logger::g_flush = defaultFlush;
+
 int Logger::defaultLevel = 0;
 
 Logger::Logger(const char* file, int line, int level)
@@ -62,7 +64,7 @@ Logger::~Logger() {
 
 	g_output(buf.data(), buf.length());
 
-	if (level_ == FATAL) {
+	if (level_ == FLY_FATAL) {
 		g_flush();
 		abort();
 	}

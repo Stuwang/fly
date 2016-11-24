@@ -20,8 +20,8 @@ int Poller::poll(int timeout, ChannelList *chans) {
 	if ( num > 0 ) {
 		fillChanS(num, chans);
 		return num;
-	}else if(num == -1){
-		if(errno != EINTR){
+	} else if (num == -1) {
+		if (errno != EINTR) {
 			LOG_ERROR << "epoll wait error " << errno;
 		}
 		return 0;
@@ -38,14 +38,16 @@ void Poller::fillChanS(int num, ChannelList *chs) const {
 	}
 };
 
-void Poller::updateChannel(Channel* chan) {
+void Poller::addChannel(Channel* chan) {
+	assert(!hasChannel(chan));
 	int fd = chan->getfd();
-	if (!chan->HasAdded()) {
-		channels_[fd] = chan;
-		update(EPOLL_CTL_ADD, chan);
-	} else {
-		update(EPOLL_CTL_MOD, chan);
-	}
+	channels_[fd] = chan;
+	update(EPOLL_CTL_ADD, chan);
+};
+
+void Poller::updateChannel(Channel* chan) {
+	assert(hasChannel(chan));
+	update(EPOLL_CTL_MOD, chan);
 };
 
 void Poller::removeChannel(Channel* chan) {
