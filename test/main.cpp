@@ -48,11 +48,12 @@ void test_net() {
 	LOG_INFO << "test time " << LocalClock::Now().ToString() ;
 	LOG_INFO << "test time " << LocalClock::ToDay().ToString() ;
 
-	struct sockaddr_in addr = socketops::fromPort(8060);
+	NetAddr addr(8060);
 	Accepter accepter(&service, addr, false);
 	accepter.setNewConnectionCallBack([&service](int sockfd,
-	const struct sockaddr_in & a) {
-		LOG_INFO << "socket " << sockfd << " New Connection ,address " << socketops::toIpPort(sockaddr_cast(&a)) ;
+	const NetAddr & a) {
+		LOG_INFO << "socket " << sockfd << " New Connection ,address " 
+			<< a.IpPort();
 		TcpConPtr ptr( new TcpConnection(&service, sockfd));
 		ptr->ReadCallBack([](const TcpConPtr & conn) {
 			auto &buf = *( conn->readBuffer() );
