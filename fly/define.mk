@@ -2,12 +2,18 @@ AR=ar
 
 AR_FLAG=rcs
 
-# CCX=clang++
-CCX=g++
+CCX=clang++
+# CCX=g++
 
 INCLUDE=${ROOTDIR}
 
-CXX_FLAG=-O2 -g -Werror -Wall -std=c++11
+DEBUG=-g
+
+OP_LEVEL=-O2
+
+CXX_VERSION=-std=c++11
+
+CXX_FLAG=$(OP_LEVEL) $(DEBUG) -Werror -Wall $(CXX_VERSION)
 
 INCLUDE_FLAG=-I${INCLUDE} -I.
 
