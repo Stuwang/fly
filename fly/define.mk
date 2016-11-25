@@ -3,7 +3,7 @@ AR=ar
 AR_FLAG=rcs
 
 CCX=clang++
-# CCX=g++
+#CCX=g++
 
 INCLUDE=${ROOTDIR}
 

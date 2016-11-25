@@ -15,8 +15,8 @@ EventLoop::EventLoop()
 };
 
 EventLoop::~EventLoop() {
-	delete poller_;
 	delete timerqueue_;
+	delete poller_;
 };
 
 void EventLoop::Loop() {

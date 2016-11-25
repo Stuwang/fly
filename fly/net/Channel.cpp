@@ -29,7 +29,7 @@ void Channel::update() {
 };
 
 void Channel::remove() {
-	assert(!addedEvents_);
+	//assert(!addedEvents_);
 	poller_->removeChannel(this);
 	addedEvents_ = false;
 };
