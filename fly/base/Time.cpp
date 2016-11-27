@@ -4,7 +4,6 @@
 namespace fly {
 
 std::string Time::ToString() const {
-	
 	int64_t msenonds = (  data_.tv_sec ) * kMicroSecondsPerSecond + data_.tv_usec ;
 	char buf[32] = {0};
 	time_t seconds = static_cast<time_t>(msenonds / kMicroSecondsPerSecond);

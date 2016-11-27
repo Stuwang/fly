@@ -57,7 +57,7 @@ public:
 	explicit LockGuard(Mutex& mutex)
 		: mutex_(mutex)
 	{
-		assert(!mutex_.isLocked());
+		// assert(!mutex_.isLocked());
 		mutex_.lock();
 	};
 	~LockGuard() {

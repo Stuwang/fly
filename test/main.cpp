@@ -18,7 +18,7 @@ public:
 	};
 
 	static void callback(int) {
-		LOG_INFO << "signal" << Sin; 
+		LOG_INFO << "signal" << Sin;
 		GetCallBack()();
 	};
 
@@ -35,9 +35,9 @@ std::vector<TcpConPtr> &Conns() {
 
 void test_net() {
 	// Signal_ignore<SIGPIPE> __;
-	Signal::signal(SIGPIPE,[](){
+	Signal::signal(SIGPIPE, []() {
 		LOG_INFO << "SIGPIPE OCCR";
-			});
+	});
 	ThreadInit _init;
 
 	EventLoop service;
@@ -52,8 +52,8 @@ void test_net() {
 	Accepter accepter(&service, addr, false);
 	accepter.setNewConnectionCallBack([&service](int sockfd,
 	const NetAddr & a) {
-		LOG_INFO << "socket " << sockfd << " New Connection ,address " 
-			<< a.IpPort();
+		LOG_INFO << "socket " << sockfd << " New Connection ,address "
+		         << a.IpPort();
 		TcpConPtr ptr( new TcpConnection(&service, sockfd));
 		ptr->ReadCallBack([](const TcpConPtr & conn) {
 			auto &buf = *( conn->readBuffer() );
@@ -84,9 +84,9 @@ void test_net() {
 	LOG_INFO << fmt("%p", (void*)&service);
 	accepter.listen();
 
-	Signal::signal(SIGINT,[&](){
+	Signal::signal(SIGINT, [&]() {
 		service.quit();
-			});
+	});
 
 	service.Loop();
 
@@ -105,6 +105,15 @@ void test_timer() {
 	service.Loop();
 }
 
+void TestLooger() {
+	AsyncLogger::Init("yuanlog-");
+	LOG_INFO << "hahhahahha";
+}
+
 int main() {
-	test_net() ;
+	// test_net() ;
+	TestLooger();
+	// sleep(5);
+	LOG_ERROR << "fuck" ;
+	Logger::g_flush();
 };

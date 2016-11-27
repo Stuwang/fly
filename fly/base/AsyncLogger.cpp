@@ -1,5 +1,7 @@
 #include <base/AsyncLogger.h>
 
+#include <iostream>
+
 namespace fly {
 
 static size_t FileSize(StringView filename)
@@ -29,8 +31,9 @@ AppendFile::~AppendFile() {
 }
 
 void AppendFile::Append(const char* data, const size_t size) {
-	size_t len = fwrite(data, size, 1, fp_);
+	size_t len = fwrite(data, 1, size, fp_);
 	fileSize_ += len;
+	std::cout << len << " " << size << std::endl;
 	assert(size == len );
 };
 
@@ -64,6 +67,7 @@ void AsyncLogger::Init(StringView name,
 	Logger::SetLevel(level);
 	Logger::setOutputFun(AsyncLoggerWrite);
 	Logger::setFlushFun(AsyncLoggerFlush);
+	std::cout << "ok init ok" << std::endl;
 };
 
 // member function
@@ -101,6 +105,9 @@ void AsyncLogger::Write(const char* data, size_t size) {
 
 void AsyncLogger::Flush() {
 	LockGuard lock(mutex_);
+	rws_.push(std::move(buf_));
+	std::string().swap(buf_);
+	buf_.reserve(bufSize_ + 1024 * 5);
 	auto & s_ = rws_;
 	while (!s_.empty()) {
 		auto & ws = s_.front();
@@ -109,12 +116,24 @@ void AsyncLogger::Flush() {
 			s_.pop();
 		}
 	}
-
+	std::cout << "ok " << std::endl;
 };
 
 std::string AsyncLogger::GetTimeSuffix() {
+	static const int64_t kMicroSecondsPerSecond = 1000 * 1000;
 	time_ = LocalClock::Now();
-	return time_.ToString();
+	int64_t msenonds = time_.Ms() ;
+	char buf[32] = {0};
+	time_t seconds = static_cast<time_t>(msenonds / kMicroSecondsPerSecond);
+	struct tm tm_time;
+	gmtime_r(&seconds, &tm_time);
+	int microseconds = static_cast<int>(msenonds % kMicroSecondsPerSecond);
+	snprintf(buf, sizeof(buf), "%4d%02d%02d-%02d-%02d-%02d-%06d",
+	         tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
+	         tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec,
+	         microseconds);
+	return std::string(buf);
+	return buf;
 };
 
 void AsyncLogger::Run() {
