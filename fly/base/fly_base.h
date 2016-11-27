@@ -18,6 +18,7 @@
 #include <base/Thread.h>
 #include <base/Time.h>
 #include <base/Types.h>
+#include <base/AsyncLogger.h>
 
 
 #endif

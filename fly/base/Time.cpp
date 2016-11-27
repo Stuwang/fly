@@ -18,7 +18,8 @@ std::string Time::ToString() const {
 	return std::string(buf);
 };
 
-Date Date::ToDate() const {
+Date Time::ToDate() const {
+	auto& tv = data_;
 	int64_t msenonds = ( tv.tv_sec ) * kMicroSecondsPerSecond + tv.tv_usec ;
 	time_t seconds = static_cast<time_t>(msenonds / kMicroSecondsPerSecond);
 	struct tm tm_time;
