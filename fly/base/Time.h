@@ -97,6 +97,8 @@ public:
 		return msenonds;
 	};
 
+	Date ToDate() const;
+
 	std::string ToString()const;
 
 	friend bool operator==(const Time& left, const Time& right) {

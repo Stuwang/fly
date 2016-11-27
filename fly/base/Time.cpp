@@ -18,6 +18,15 @@ std::string Time::ToString() const {
 	return std::string(buf);
 };
 
+Date Date::ToDate() const {
+	int64_t msenonds = ( tv.tv_sec ) * kMicroSecondsPerSecond + tv.tv_usec ;
+	time_t seconds = static_cast<time_t>(msenonds / kMicroSecondsPerSecond);
+	struct tm tm_time;
+	gmtime_r(&seconds, &tm_time);
+
+	return Date(tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday);
+};
+
 Date Clock::ToDay() {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
