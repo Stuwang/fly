@@ -33,7 +33,6 @@ AppendFile::~AppendFile() {
 void AppendFile::Append(const char* data, const size_t size) {
 	size_t len = fwrite(data, 1, size, fp_);
 	fileSize_ += len;
-	std::cout << len << " " << size << std::endl;
 	assert(size == len );
 };
 
@@ -67,7 +66,6 @@ void AsyncLogger::Init(StringView name,
 	Logger::SetLevel(level);
 	Logger::setOutputFun(AsyncLoggerWrite);
 	Logger::setFlushFun(AsyncLoggerFlush);
-	std::cout << "ok init ok" << std::endl;
 };
 
 // member function
@@ -87,6 +85,7 @@ AsyncLogger::AsyncLogger(StringView filename,
 
 AsyncLogger::~AsyncLogger() {
 	stop_ = true;
+	Flush();
 	thread_->join();
 	thread_.reset();
 	file_.reset();
@@ -112,11 +111,11 @@ void AsyncLogger::Flush() {
 	while (!s_.empty()) {
 		auto & ws = s_.front();
 		if (!ws.empty()) {
-			WriteFile(ws.data(), ws.size(), true);
-			s_.pop();
+			WriteFile(ws.data(), ws.size(), false);
 		}
+		s_.pop();
 	}
-	std::cout << "ok " << std::endl;
+	file_->Flush();
 };
 
 std::string AsyncLogger::GetTimeSuffix() {
@@ -142,13 +141,17 @@ void AsyncLogger::Run() {
 		std::queue<std::string> s_;
 		{
 			LockGuard lock(mutex_);
+			cond_.TimeWait(lock, MilliSeconds(3000));
+
 			if (NextFile()) {
 				RollFile();
 			}
-			if (rws_.empty()) {
-				cond_.TimeWait(lock, MilliSeconds(3000));
-				continue;
-			} else {
+			if(!buf_.empty()){
+				rws_.push(std::move(buf_));
+				buf_.clear();
+				buf_.reserve(bufSize_ + 10 * 1024);
+			}
+			if(!rws_.empty()){
 				std::swap(s_, rws_);
 			}
 		}
@@ -161,6 +164,7 @@ void AsyncLogger::Run() {
 		}
 	}
 	Flush();
+	std::cout << "End of Run" << std::endl;
 };
 
 bool AsyncLogger::NextFile() {
@@ -169,7 +173,7 @@ bool AsyncLogger::NextFile() {
 
 void AsyncLogger::WriteFile(const char* data, size_t size, bool flush) {
 	int leftLen = fileSize_ - file_->FileSize();
-	if ( leftLen < size ) {
+	if ( leftLen < static_cast<int>(size) ) {
 		file_->Append(data, leftLen);
 		RollFile();
 		WriteFile(data + leftLen, size - leftLen, false);

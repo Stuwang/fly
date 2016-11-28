@@ -113,7 +113,7 @@ void TestLooger() {
 int main() {
 	// test_net() ;
 	TestLooger();
-	// sleep(5);
+	sleep(1);
 	LOG_ERROR << "fuck" ;
-	Logger::g_flush();
+	//Logger::g_flush();
 };
