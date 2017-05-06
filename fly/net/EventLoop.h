@@ -2,6 +2,7 @@
 #define FLY_EVENTLOOP_H__
 
 #include <list>
+#include <memory>
 
 #include <base/Mutex.h>
 #include <base/Logger.h>
@@ -44,13 +45,12 @@ public:
 	void cancleTimer(int64_t id);
 public:
 	Poller *poller_;
-	Channel weakup_chan_;
+	std::unique_ptr<Channel> weakup_chan_;
 	ChannelList chans_;
 
 	TimerQueue* timerqueue_;
 
-	bool looping_;
-	bool IsCallFunctors_;
+	bool shouldSendEvent_;
 	bool quit_;
 
 	pthread_t pid_;

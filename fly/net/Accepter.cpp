@@ -8,7 +8,7 @@ Accepter::Accepter(EventLoop* loop,
                    const NetAddr& addr, bool reuseport)
 	: loop_(loop)
 	, addr_(addr)
-	, chan_(loop_->getPoller(),socketops::creatNoBlockOrDie())
+	, chan_(loop_->getPoller(), socketops::creatNoBlockOrDie())
 	, listening_(false)
 	, idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
@@ -17,7 +17,7 @@ Accepter::Accepter(EventLoop* loop,
 	socketops::setReusePort(fd, reuseport);
 	socketops::bindOrDie(fd, addr);
 	chan_.setReadCallBack(std::bind(&Accepter::handleRead, this));
-
+	LOG_DEBUG << "Accepter create ,fd is " << fd;
 };
 
 Accepter::~Accepter() {

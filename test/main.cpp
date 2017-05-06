@@ -89,7 +89,7 @@ void test_net() {
 	});
 
 	service.Loop();
-
+	LOG_DEBUG << "out of loop";
 };
 
 void test_timer() {
@@ -111,8 +111,8 @@ void TestLooger() {
 }
 
 int main() {
-	// test_net() ;
-	TestLooger();
+	test_net() ;
+	// TestLooger();
 	// sleep(5);
 	LOG_ERROR << "fuck" ;
 	Logger::g_flush();

@@ -2,21 +2,21 @@
 
 namespace fly {
 
-Channel::Channel(Poller *poller,int sockfd)
+Channel::Channel(Poller *poller, int sockfd)
 	: poller_(poller)
 	, sockfd_(sockfd)
 	, addedEvents_(false)
 	, events_(0)
 	, r_events_(0)
 {
-
+	LOG_DEBUG << "Channel create,fd is " << getfd();
 };
 
 Channel::~Channel() {
 	disableAll();
 	remove();
 	socketops::close(getfd());
-	LOG_INFO << "Channel close";
+	LOG_INFO << "Channel close , fd is" << getfd();
 };
 
 void Channel::update() {

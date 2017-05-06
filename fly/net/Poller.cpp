@@ -19,14 +19,16 @@ int Poller::poll(int timeout, ChannelList *chans) {
 	int num = ::epoll_wait(epollfd_, &*events_.begin(), static_cast<int>(EventsInitSize), timeout );
 	if ( num > 0 ) {
 		fillChanS(num, chans);
-		return num;
+		// return num;
 	} else if (num == -1) {
 		if (errno != EINTR) {
 			LOG_ERROR << "epoll wait error " << errno;
 		}
-		return 0;
+		// return 0;
 	}
-	return 0;
+	LOG_DEBUG << "here " << num
+	          <<  "chan size " << chans->size();
+	return num;
 };
 
 void Poller::fillChanS(int num, ChannelList *chs) const {

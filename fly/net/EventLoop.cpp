@@ -4,27 +4,34 @@ namespace fly {
 
 EventLoop::EventLoop()
 	: poller_(GetNewPoller())
-	, weakup_chan_(poller_,socketops::creatEventFd())
+	, weakup_chan_()
 	, timerqueue_(new TimerQueue(this) )
-	, looping_ (false)
+	, shouldSendEvent_(false)
 	, quit_ (false)
 	, pid_(tid())
 {
-	weakup_chan_.setReadCallBack(std::bind(&EventLoop::HandleRead, this));
-	weakup_chan_.enableRead();
+	weakup_chan_.reset(new Channel(poller_, socketops::creatEventFd()));
+	LOG_DEBUG << "weaoup fd is " << weakup_chan_->getfd();
+	weakup_chan_->setReadCallBack(std::bind(&EventLoop::HandleRead, this));
+	weakup_chan_->enableRead();
 };
 
 EventLoop::~EventLoop() {
+	LOG_DEBUG << " before delete timerqueue";
 	delete timerqueue_;
+	LOG_DEBUG << " after delete timerqueue";
+	weakup_chan_.reset();
+	LOG_DEBUG << "after event delete";
 	delete poller_;
+	LOG_DEBUG << " after delete polller";
 };
 
 void EventLoop::Loop() {
-	looping_ = true;
 	while (!quit_) {
+		LOG_DEBUG << "quit " << (quit_ ? "true " : "false");
 		chans_.clear();
 		int num = poller_->poll(-1, &chans_);
-		IsCallFunctors_ = false;
+		shouldSendEvent_ = false;
 		LOG_DEBUG << "poll size " << chans_.size() ;
 		if (num != 0) {
 			for (auto &i : chans_) {
@@ -33,24 +40,27 @@ void EventLoop::Loop() {
 		}
 		DoFuncs();
 	}
-	looping_ = false;
+	LOG_DEBUG << "loop end !";
 };
 
 void EventLoop::DoFuncs() {
+
 	std::list<Functor>	funcs;
 	{
 		LockGuard lock(mutex_);
 		funcs.swap(funcs_);
-		IsCallFunctors_ = true;
+		shouldSendEvent_ = true;
 	}
 	for (auto &i : funcs) {
 		i();
 	}
+	shouldSendEvent_ = false;
+
 	//LOG_DEBUG << "Do Functor , thread id:" << pid_ ;
 };
 
 void EventLoop::HandleRead() {
-	int fd = weakup_chan_.getfd();
+	int fd = weakup_chan_->getfd();
 	uint64_t one = 1;
 	size_t n = socketops::read(fd, &one, sizeof(uint64_t));
 	if (n != sizeof(one)) {
@@ -60,7 +70,7 @@ void EventLoop::HandleRead() {
 };
 
 void EventLoop::WeakUp() {
-	int fd = weakup_chan_.getfd();
+	int fd = weakup_chan_->getfd();
 	uint64_t one = 1;
 	size_t n = socketops::write(fd, &one, sizeof(uint64_t));
 	if (n != sizeof(one)) {
@@ -70,6 +80,7 @@ void EventLoop::WeakUp() {
 };
 
 void EventLoop::quit() {
+	LOG_DEBUG << "QUIT CALLED ";
 	quit_ = true;
 	WeakUp();
 };
@@ -91,7 +102,7 @@ void EventLoop::queueInLoop(const Functor& func) {
 		LockGuard lock(mutex_);
 		funcs_.push_back(func);
 	}
-	if (!IsInLoop() || IsCallFunctors_) {
+	if (!IsInLoop() || shouldSendEvent_) {
 		WeakUp();
 	}
 };
