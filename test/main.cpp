@@ -115,5 +115,5 @@ int main() {
 	// TestLooger();
 	// sleep(5);
 	LOG_ERROR << "fuck" ;
-	Logger::g_flush();
+	//Logger::g_flush();
 };
