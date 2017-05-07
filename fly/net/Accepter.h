@@ -36,7 +36,7 @@ private:
 
 	EventLoop *loop_;
 	NetAddr addr_;
-	Channel chan_;
+	std::unique_ptr<Channel> chan_;
 	NewConnetionCallBack callback_;
 	bool listening_;
 	int idleFd_;

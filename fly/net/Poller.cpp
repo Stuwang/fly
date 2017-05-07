@@ -42,32 +42,45 @@ void Poller::fillChanS(int num, ChannelList *chs) const {
 
 void Poller::addChannel(Channel* chan) {
 	assert(!hasChannel(chan));
-	int fd = chan->getfd();
-	channels_[fd] = chan;
-	update(EPOLL_CTL_ADD, chan);
+	int sockfd = chan->getfd();
+	channels_[sockfd] = chan;
+	update(sockfd, EPOLL_CTL_ADD, chan->events(), chan);
 };
 
 void Poller::updateChannel(Channel* chan) {
 	assert(hasChannel(chan));
-	update(EPOLL_CTL_MOD, chan);
+	int sockfd = chan->getfd();
+	update(sockfd, EPOLL_CTL_MOD, chan->events(), chan);
 };
 
 void Poller::removeChannel(Channel* chan) {
 	int sockfd = chan->getfd();
 	ChannelMap::const_iterator it = channels_.find(sockfd);
 	assert(hasChannel(chan));
-	channels_.erase(it->first);
-	update(EPOLL_CTL_DEL, chan);
+	channels_.erase(sockfd);
+	update(sockfd, EPOLL_CTL_DEL, it->second->events(), chan);
 };
 
-void Poller::update(int operation, Channel *chan) {
-	int fd = chan->getfd();
+// void Poller::update(int operation, Channel *chan) {
+// 	int fd = chan->getfd();
+// 	struct epoll_event event;
+// 	bzero(&event, sizeof(event));
+// 	event.events = chan->events();
+// 	event.data.ptr = static_cast<void*>(chan);
+// 	if (::epoll_ctl(epollfd_, operation, fd, &event) < 0 ) {
+// 		LOG_DEBUG << "operation error : "
+// 		          << operation;
+// 	}
+// };
+
+void Poller::update(int sockfd, int operation, int events, void *data) {
 	struct epoll_event event;
 	bzero(&event, sizeof(event));
-	event.events = chan->events();
-	event.data.ptr = static_cast<void*>(chan);
-	if (::epoll_ctl(epollfd_, operation, fd, &event) < 0 ) {
-
+	event.events = events;
+	event.data.ptr = data;
+	if (::epoll_ctl(epollfd_, operation, sockfd, &event) < 0 ) {
+		LOG_DEBUG << "operation error : "
+		          << operation;
 	}
 };
 

@@ -8,36 +8,36 @@ Accepter::Accepter(EventLoop* loop,
                    const NetAddr& addr, bool reuseport)
 	: loop_(loop)
 	, addr_(addr)
-	, chan_(loop_->getPoller(), socketops::creatNoBlockOrDie())
+	, chan_(new Channel(loop_->getPoller(), socketops::creatNoBlockOrDie()) )
 	, listening_(false)
 	, idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
-	int fd = chan_.getfd();
+	int fd = chan_->getfd();
 	socketops::setReuseAddr(fd, true);
 	socketops::setReusePort(fd, reuseport);
 	socketops::bindOrDie(fd, addr);
-	chan_.setReadCallBack(std::bind(&Accepter::handleRead, this));
+	chan_->setReadCallBack(std::bind(&Accepter::handleRead, this));
 	LOG_DEBUG << "Accepter create ,fd is " << fd;
 };
 
 Accepter::~Accepter() {
-	chan_.disableAll();
-	chan_.remove();
-	::close(idleFd_);
+	chan_->disableAll();
+	chan_->remove();
+	socketops::close(idleFd_);
 }
 
 void Accepter::listen() {
-	int fd = chan_.getfd();
+	int fd = chan_->getfd();
 	socketops::listenOrDie(fd);
 	listening_ = true;
-	chan_.enableRead();
+	chan_->enableRead();
 	LOG_INFO << "listens start,local address:"
 	         << addr_.IpPort();
 };
 
 void Accepter::handleRead() {
 	NetAddr addr;
-	int connfd = socketops::accept(chan_.getfd(), &addr);
+	int connfd = socketops::accept(chan_->getfd(), &addr);
 	if (connfd > 0) {
 		if (callback_) {
 			callback_(connfd, addr);
@@ -49,7 +49,7 @@ void Accepter::handleRead() {
 	} else {
 		if (errno == EMFILE) {
 			::close(idleFd_);
-			idleFd_ = socketops::accept(chan_.getfd(), &addr);
+			idleFd_ = socketops::accept(chan_->getfd(), &addr);
 			::close(idleFd_);
 			::open("/dev/null", O_RDONLY | O_CLOEXEC);
 			LOG_INFO << "New Connection , But no socket descriper can use"

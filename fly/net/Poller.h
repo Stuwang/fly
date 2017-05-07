@@ -29,7 +29,7 @@ public:
 	void removeChannel(Channel* chan);
 	bool hasChannel(Channel* chan);
 private:
-	void update(int operation, Channel *chan);
+	void update(int sockfd,int operation, int event,void *data);
 	void fillChanS(int num, ChannelList*) const;
 
 	typedef std::map<int, Channel*> ChannelMap;

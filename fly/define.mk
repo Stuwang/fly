@@ -2,8 +2,8 @@ AR=ar
 
 AR_FLAG=rcs
 
-# CCX=clang++
-CCX=g++
+CCX=clang++
+# CCX=g++
 
 INCLUDE=${ROOTDIR}
 

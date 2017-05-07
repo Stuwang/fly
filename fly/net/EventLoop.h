@@ -32,7 +32,7 @@ public:
 	void HandleRead();
 	void WeakUp();
 	void quit();
-	Poller *getPoller() {return poller_;};
+	Poller *getPoller() {return poller_.get();};
 
 	bool IsInLoop() const ;
 
@@ -44,11 +44,11 @@ public:
 	int64_t RunEvery(const TimeDuration& t, const Functor& f);
 	void cancleTimer(int64_t id);
 public:
-	Poller *poller_;
+	std::unique_ptr<Poller> poller_;
 	std::unique_ptr<Channel> weakup_chan_;
 	ChannelList chans_;
 
-	TimerQueue* timerqueue_;
+	std::unique_ptr<TimerQueue> timerqueue_;
 
 	bool shouldSendEvent_;
 	bool quit_;

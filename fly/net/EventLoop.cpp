@@ -3,27 +3,29 @@
 namespace fly {
 
 EventLoop::EventLoop()
-	: poller_(GetNewPoller())
+	: poller_()
 	, weakup_chan_()
-	, timerqueue_(new TimerQueue(this) )
+	, timerqueue_()
 	, shouldSendEvent_(false)
 	, quit_ (false)
 	, pid_(tid())
 {
-	weakup_chan_.reset(new Channel(poller_, socketops::creatEventFd()));
+	poller_.reset(GetNewPoller());
+	weakup_chan_.reset(new Channel(poller_.get(), socketops::creatEventFd()));
+	timerqueue_.reset(new TimerQueue(this));
 	LOG_DEBUG << "weaoup fd is " << weakup_chan_->getfd();
 	weakup_chan_->setReadCallBack(std::bind(&EventLoop::HandleRead, this));
 	weakup_chan_->enableRead();
 };
 
 EventLoop::~EventLoop() {
-	LOG_DEBUG << " before delete timerqueue";
-	delete timerqueue_;
-	LOG_DEBUG << " after delete timerqueue";
-	weakup_chan_.reset();
-	LOG_DEBUG << "after event delete";
-	delete poller_;
-	LOG_DEBUG << " after delete polller";
+	// LOG_DEBUG << " before delete timerqueue";
+	// delete timerqueue_;
+	// LOG_DEBUG << " after delete timerqueue";
+	// weakup_chan_.reset();
+	// LOG_DEBUG << "after event delete";
+	// delete poller_;
+	// LOG_DEBUG << " after delete polller";
 };
 
 void EventLoop::Loop() {
