@@ -82,7 +82,7 @@ public:
 
 	friend LogStream& operator<<(LogStream& self, const void*);
 
-	friend LogStream& operator<<(LogStream& self,const StringView& v);
+	friend LogStream& operator<<(LogStream& self, const StringView& v);
 
 
 	BufferT& buffer() {
@@ -97,29 +97,70 @@ public:
 	static const int MaxNumSize = 64;
 };
 
-class fmt{
-	public:
-		template<class T>
-		fmt(const char *f,const T& data){
-			size_ = snprintf(buf_,sizeof(buf_),f,data);
-		};
+class fmt {
+public:
+	template<class T>
+	fmt(const char *f, const T& data) {
+		size_ = snprintf(buf_, sizeof(buf_), f, data);
+	};
 
-		const char* data()const{
-			return buf_;
-		};
+	const char* data()const {
+		return buf_;
+	};
 
-		int size() const {
-			return size_;
-		};
-	private:
-		char buf_[64];
-		int size_;
+	int size() const {
+		return size_;
+	};
+private:
+	char buf_[64];
+	int size_;
 };
 
-inline LogStream& operator<< (LogStream& out,const fmt& f){
-	out.append(f.data(),f.size());
+inline LogStream& operator<< (LogStream& out, const fmt& f) {
+	out.append(f.data(), f.size());
 	return out;
 };
+
+namespace inner {
+
+class InnerMinStr {
+public:
+	InnerMinStr(const char* str, int min_len)
+		: data_(str)
+		, size_(strlen(str))
+		, min_len_(min_len)
+	{};
+
+	bool needSpace() const {
+		return size_ < min_len_;
+	};
+
+	int spaceLen() const {
+		assert(needSpace());
+		return min_len_ - size_;
+	}
+
+	const char* data()const {
+		return data_;
+	};
+
+	int size() const {
+		return size_;
+	};
+private:
+	const char* data_;
+	int size_;
+	int min_len_;
+};
+
+} // inner
+
+LogStream& operator << (LogStream& out, const inner::InnerMinStr& str);
+
+inline inner::InnerMinStr MinStr(const char* data, int len) {
+	return inner::InnerMinStr{data, len};
+};
+
 
 }
 

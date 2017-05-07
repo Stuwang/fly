@@ -100,4 +100,19 @@ LogStream& operator<<(LogStream& self, const StringView& v) {
 	return self;
 };
 
+// 
+namespace inner{
+}
+
+LogStream& operator << (LogStream& out, const inner::InnerMinStr& str) {
+	out.append(str.data(), str.size());
+	if (str.needSpace()) {
+		int len = str.spaceLen();
+		char space[len];
+		memset(space, ' ', len);
+		out.append(space, len);
+	}
+	return out;
+};
+
 }

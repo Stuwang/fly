@@ -16,7 +16,8 @@ void Buffer::swap(Buffer& buf) {
 };
 
 size_t Buffer::Read(char *dest, size_t len) {
-	size_t s = len > (WriteIndex_ - ReadIndex_) ? (WriteIndex_ - ReadIndex_) : len;
+	size_t s = len > (WriteIndex_ - ReadIndex_) ?
+	           (WriteIndex_ - ReadIndex_) : len;
 	memcpy(dest, data(), s);
 	ReadIndex_ += s;
 	return s;

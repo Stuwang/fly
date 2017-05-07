@@ -51,7 +51,11 @@ Logger::Logger(const char* file, int line, int level)
 	, stream_()
 {
 	FmtTime();
-	stream_ << ":" << file << ":" << line << ":" << LogLevelName(level);
+	stream_
+	        << ":" << LogLevelName(level)
+	        << ":" << MinStr(file, 16)
+	        << ":" << line
+	        ;
 };
 
 Logger::~Logger() {
