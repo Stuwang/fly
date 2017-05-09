@@ -114,6 +114,6 @@ int main() {
 	test_net() ;
 	// TestLooger();
 	// sleep(5);
-	LOG_ERROR << "fuck" ;
+	LOG_INFO << "fuck" ;
 	//Logger::g_flush();
 };
