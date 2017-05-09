@@ -85,6 +85,11 @@ void test_net() {
 	accepter.listen();
 
 	Signal::signal(SIGINT, [&]() {
+		auto & ts = Conns();
+		for (auto &i : ts) {
+			i->forceClose();
+		}
+		ts.clear();
 		service.quit();
 	});
 
