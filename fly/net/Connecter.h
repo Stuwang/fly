@@ -1,6 +1,7 @@
 #ifndef FLY_CONNECTER_H__
 #define FLY_CONNECTER_H__
 
+#include <memory>
 #include <base/Types.h>
 #include <net/TcpConnection.h>
 

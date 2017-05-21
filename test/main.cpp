@@ -5,7 +5,6 @@
 
 using namespace std;
 using namespace fly;
-// using namespace fly::socketops;
 
 template<int Sin>
 class Singnal {
@@ -113,9 +112,12 @@ void test_timer() {
 void TestLooger() {
 	AsyncLogger::Init("yuanlog-");
 	LOG_INFO << "hahhahahha";
+	LOG_INFO << "hahahha ";
+
 }
 
 int main() {
+	LOG_DEBUG << "NOW , we mod it   ";
 	test_net() ;
 	// TestLooger();
 	// sleep(5);
