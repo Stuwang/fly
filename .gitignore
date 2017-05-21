@@ -4,3 +4,4 @@ test/main
 study/*
 test/a.out
 test/test.txt
+build/*

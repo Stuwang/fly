@@ -116,6 +116,7 @@ void TestLooger() {
 }
 
 int main() {
+	LOG_DEBUG << "NOW , we mod it   ";
 	test_net() ;
 	// TestLooger();
 	// sleep(5);
