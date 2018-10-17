@@ -5,3 +5,5 @@ study/*
 test/a.out
 test/test.txt
 build/*
+compile_commands.json
+.gitignore
