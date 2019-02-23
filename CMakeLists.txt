@@ -1,9 +1,7 @@
-SET(CMAKE_CXX_COMPILER "clang++")
-message(STATUS "COMPILER:clang++")
 
 # CMake 最低版本号要求
 cmake_minimum_required (VERSION 2.8)
-
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # if(CMAKE_COMPILER_IS_GNUCXX)
 add_compile_options(-std=c++11)
 message(STATUS "optional:-std=c++11")
