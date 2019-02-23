@@ -11,7 +11,7 @@ message(STATUS "optional:-std=c++11")
 add_compile_options(-Werror -Wall)
 message(STATUS "optional:-Werror -Wall")
 
-add_compile_options(-o2)
+add_compile_options(-o3)
 message(STATUS "optional:-o2")
 
 add_compile_options(-pthread)
