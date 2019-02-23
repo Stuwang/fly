@@ -50,7 +50,7 @@ void Connecter::Start() {
 	chan_->setWriteCallBack(std::bind(&Connecter::HandleWrite,
 	                                  shared_from_this()));
 	chan_->setErrorCallBack(std::bind(&Connecter::HandleError,
-	                                  std::shared_from_this()));
+	                                  shared_from_this()));
 	chan_->enableWrite();
 };
 
